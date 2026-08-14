@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PréventIA Invisible Map — Rendre l'invisible, visible</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👁️</text></svg>">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+:root{
+  --navy:#0b1420;--navy-2:#0f1b2d;--surface:#141f30;--surface-2:#1a2a42;
+  --teal:#2dd4bf;--teal-dim:rgba(45,212,191,.12);--teal-glow:rgba(45,212,191,.25);
+  --purple:#a855f7;--purple-dim:rgba(168,85,247,.1);--purple-glow:rgba(168,85,247,.2);
+  --orange:#f97316;--danger:#ef4444;--warning:#f59e0b;--safe:#22c55e;--blue:#3b82f6;
+  --text:#e2e8f0;--text-dim:#8b9cb8;--text-muted:#5a6a80;
+  --radius:14px;--radius-lg:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--navy);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+/* ═══════════════════════════════════════
+   HERO SECTION (placeholder)
+   ═══════════════════════════════════════ */
+.hero{
+  position:relative;
+  min-height:85vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  /* ── REMPLACER CE BACKGROUND PAR L'IMAGE/VIDÉO HERO ── */
+  background:
+    radial-gradient(ellipse at 30% 50%, rgba(168,85,247,.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 60%, rgba(45,212,191,.06) 0%, transparent 50%),
+    linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
+}
+
+/* ── HERO PLACEHOLDER: retirer ce bloc quand l'image/vidéo est prête ── */
+.hero-placeholder{
+  position:absolute;inset:0;z-index:0;overflow:hidden;
+}
+.hero-placeholder .orb{
+  position:absolute;border-radius:50%;filter:blur(80px);opacity:.15;animation:float 12s ease-in-out infinite;
+}
+.hero-placeholder .orb-1{width:500px;height:500px;background:var(--purple);top:-10%;left:-5%;animation-delay:0s}
+.hero-placeholder .orb-2{width:400px;height:400px;background:var(--teal);bottom:-5%;right:-5%;animation-delay:4s}
+.hero-placeholder .orb-3{width:300px;height:300px;background:var(--orange);top:40%;left:50%;animation-delay:8s}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-20px) scale(1.1)}}
+
+/* Animated particles background */
+.hero-particles{position:absolute;inset:0;z-index:0}
+.hero-particles canvas{width:100%;height:100%}
+
+.hero-content{
+  position:relative;z-index:2;
+  text-align:center;
+  max-width:800px;
+  padding:2rem 1.5rem;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;
+  color:var(--teal);background:var(--teal-dim);
+  padding:.4rem 1rem;border-radius:100px;margin-bottom:1.5rem;
+  border:1px solid rgba(45,212,191,.15);
+}
+.hero h1{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(2rem,5.5vw,3.8rem);
+  font-weight:400;
+  color:#fff;
+  line-height:1.15;
+  margin-bottom:.5rem;
+}
+.hero h1 .gradient{
+  background:linear-gradient(135deg,var(--purple),var(--teal));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero .tagline{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(1rem,2.5vw,1.5rem);
+  font-weight:400;font-style:italic;
+  color:var(--text-dim);
+  margin-bottom:1.5rem;
+}
+.hero p{
+  font-size:clamp(.85rem,1.8vw,1.05rem);
+  color:var(--text-dim);
+  max-width:600px;margin:0 auto 2rem;
+  line-height:1.6;
+}
+.hero-cta{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.75rem 2rem;border-radius:100px;
+  background:linear-gradient(135deg,var(--purple),#7c3aed);
+  color:#fff;font-family:inherit;font-size:.95rem;font-weight:600;
+  border:none;cursor:pointer;
+  box-shadow:0 4px 24px rgba(168,85,247,.3);
+  transition:all .3s;
+}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(168,85,247,.4)}
+.hero-scroll{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  font-size:.7rem;color:var(--text-muted);
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
+  animation:bounce 2s infinite;
+}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+
+/* ═══════════════════════════════════════
+   CONCEPT SECTION
+   ═══════════════════════════════════════ */
+.section{
+  max-width:1100px;margin:0 auto;
+  padding:5rem 1.5rem;
+}
+.section-label{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;
+  color:var(--purple);background:var(--purple-dim);
+  padding:.3rem .8rem;border-radius:100px;margin-bottom:1rem;
+  border:1px solid rgba(168,85,247,.12);
+}
+.section h2{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(1.5rem,3.5vw,2.4rem);
+  font-weight:400;color:#fff;
+  margin-bottom:1rem;
+}
+.section h2 span{color:var(--teal)}
+.section .lead{
+  font-size:clamp(.85rem,1.5vw,1.05rem);
+  color:var(--text-dim);
+  max-width:700px;
+  line-height:1.7;
+  margin-bottom:2.5rem;
+}
+
+/* UX Steps */
+.ux-flow{
+  display:flex;gap:0;justify-content:center;flex-wrap:wrap;
+  margin:3rem auto;max-width:750px;
+  position:relative;
+}
+.ux-step{
+  display:flex;flex-direction:column;align-items:center;
+  padding:.8rem 1.2rem;flex:1;min-width:100px;
+  position:relative;
+}
+.ux-step::after{
+  content:'→';position:absolute;right:-.5rem;top:50%;transform:translateY(-50%);
+  color:var(--text-muted);font-size:1.2rem;
+}
+.ux-step:last-child::after{content:''}
+.ux-icon{
+  width:50px;height:50px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;margin-bottom:.5rem;
+  border:1px solid rgba(255,255,255,.06);
+}
+.ux-step:nth-child(1) .ux-icon{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.15)}
+.ux-step:nth-child(2) .ux-icon{background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.15)}
+.ux-step:nth-child(3) .ux-icon{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.15)}
+.ux-step:nth-child(4) .ux-icon{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.15)}
+.ux-step:nth-child(5) .ux-icon{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.15)}
+.ux-label{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text)}
+@media(max-width:600px){.ux-step::after{display:none}.ux-flow{gap:.5rem}}
+
+/* ═══════════════════════════════════════
+   MODULES GRID
+   ═══════════════════════════════════════ */
+.modules-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:1.2rem;
+  margin-top:2rem;
+}
+
+.module-card{
+  background:var(--surface);
+  border-radius:var(--radius-lg);
+  border:1px solid rgba(255,255,255,.05);
+  overflow:hidden;
+  transition:transform .3s,box-shadow .3s,border-color .3s;
+  display:flex;flex-direction:column;
+}
+.module-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,.3);
+  border-color:rgba(255,255,255,.1);
+}
+.module-card.live:hover{border-color:rgba(45,212,191,.2)}
+.module-card.soon{opacity:.75}
+.module-card.soon:hover{opacity:.85;transform:translateY(-2px)}
+
+.module-visual{
+  position:relative;
+  height:180px;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.module-visual .icon-big{
+  font-size:3.5rem;
+  filter:drop-shadow(0 4px 20px rgba(0,0,0,.3));
+  position:relative;z-index:2;
+}
+.module-visual .glow{
+  position:absolute;width:120px;height:120px;border-radius:50%;
+  filter:blur(40px);opacity:.2;z-index:0;
+}
+
+/* Module-specific visual backgrounds */
+.mv-xray{background:linear-gradient(135deg,#1a0a2e 0%,#0f1b2d 100%)}
+.mv-xray .glow{background:var(--purple)}
+.mv-noise{background:linear-gradient(135deg,#0a1e2e 0%,#0f1b2d 100%)}
+.mv-noise .glow{background:var(--blue)}
+.mv-chem{background:linear-gradient(135deg,#1a2e0a 0%,#0f1b2d 100%)}
+.mv-chem .glow{background:var(--safe)}
+.mv-uv{background:linear-gradient(135deg,#2e1a0a 0%,#0f1b2d 100%)}
+.mv-uv .glow{background:var(--orange)}
+.mv-ergo{background:linear-gradient(135deg,#2e0a1a 0%,#0f1b2d 100%)}
+.mv-ergo .glow{background:var(--danger)}
+.mv-radon{background:linear-gradient(135deg,#1a1a0a 0%,#0f1b2d 100%)}
+.mv-radon .glow{background:var(--warning)}
+
+.module-body{padding:1.2rem 1.3rem 1.4rem;flex:1;display:flex;flex-direction:column}
+
+.module-status{
+  display:inline-flex;align-items:center;gap:.3rem;
+  font-size:.55rem;text-transform:uppercase;letter-spacing:.12em;
+  padding:.2rem .6rem;border-radius:100px;
+  margin-bottom:.6rem;width:fit-content;font-weight:600;
+}
+.status-live{background:rgba(34,197,94,.12);color:var(--safe)}
+.status-dev{background:rgba(245,158,11,.1);color:var(--warning)}
+.status-soon{background:rgba(255,255,255,.06);color:var(--text-muted)}
+
+.module-card h3{
+  font-family:'DM Serif Display',serif;
+  font-size:1.15rem;font-weight:400;color:#fff;
+  margin-bottom:.4rem;
+}
+.module-card h3 .accent{color:var(--purple)}
+
+.module-desc{
+  font-size:.8rem;color:var(--text-dim);
+  line-height:1.55;margin-bottom:.8rem;flex:1;
+}
+
+.module-tags{
+  display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem;
+}
+.tag{
+  font-size:.58rem;padding:.2rem .5rem;border-radius:100px;
+  background:rgba(255,255,255,.04);color:var(--text-muted);
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.module-cta{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.5rem 1.2rem;border-radius:100px;
+  font-family:inherit;font-size:.78rem;font-weight:600;
+  border:none;cursor:pointer;transition:all .3s;
+  width:fit-content;
+}
+.cta-live{
+  background:linear-gradient(135deg,var(--teal),#14b8a6);
+  color:var(--navy);
+  box-shadow:0 2px 12px rgba(45,212,191,.2);
+}
+.cta-live:hover{box-shadow:0 4px 20px rgba(45,212,191,.3);transform:translateY(-1px)}
+.cta-soon{
+  background:transparent;
+  border:1px solid rgba(255,255,255,.1);
+  color:var(--text-muted);
+  cursor:default;
+}
+
+/* ═══════════════════════════════════════
+   KILLER FEATURE HIGHLIGHT
+   ═══════════════════════════════════════ */
+.feature-highlight{
+  background:linear-gradient(135deg,rgba(168,85,247,.06),rgba(45,212,191,.04));
+  border:1px solid rgba(168,85,247,.1);
+  border-radius:var(--radius-lg);
+  padding:2.5rem;
+  margin:3rem 0;
+  display:grid;grid-template-columns:1fr 1fr;gap:2rem;
+  align-items:center;
+}
+@media(max-width:700px){.feature-highlight{grid-template-columns:1fr;text-align:center}}
+.feature-highlight h3{
+  font-family:'DM Serif Display',serif;
+  font-size:1.5rem;font-weight:400;color:#fff;margin-bottom:.6rem;
+}
+.feature-highlight p{font-size:.85rem;color:var(--text-dim);line-height:1.6}
+.feature-demo{
+  display:flex;align-items:center;justify-content:center;gap:1.5rem;
+  padding:1.5rem;background:rgba(0,0,0,.2);border-radius:var(--radius);
+}
+.feature-box{text-align:center;padding:.8rem 1.2rem;border-radius:10px;min-width:100px}
+.feature-box.avant{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.15)}
+.feature-box.apres{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.15)}
+.feature-box .fb-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem}
+.feature-box.avant .fb-label{color:var(--danger)}
+.feature-box.apres .fb-label{color:var(--safe)}
+.feature-box .fb-value{font-size:1.5rem;font-weight:700}
+.feature-box.avant .fb-value{color:var(--danger)}
+.feature-box.apres .fb-value{color:var(--safe)}
+.feature-arrow{font-size:1.5rem;color:var(--teal)}
+
+/* ═══════════════════════════════════════
+   LEVELS BADGE EXPLANATION
+   ═══════════════════════════════════════ */
+.levels{
+  display:flex;gap:1rem;flex-wrap:wrap;
+  margin:2rem 0;
+}
+.level-card{
+  flex:1;min-width:200px;
+  padding:1rem 1.2rem;border-radius:var(--radius);
+  background:var(--surface);border:1px solid rgba(255,255,255,.05);
+}
+.level-card .dot{
+  width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:.4rem;
+}
+.level-card h4{font-size:.85rem;font-weight:600;margin-bottom:.3rem;display:flex;align-items:center}
+.level-card p{font-size:.72rem;color:var(--text-dim);line-height:1.5}
+
+/* ═══════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════ */
+.site-footer{
+  border-top:1px solid rgba(255,255,255,.04);
+  padding:2.5rem 1.5rem;text-align:center;
+}
+.footer-logo{
+  font-family:'DM Serif Display',serif;
+  font-size:1.1rem;color:#fff;margin-bottom:.5rem;
+}
+.footer-logo span{color:var(--purple)}
+.site-footer p{font-size:.7rem;color:var(--text-muted);line-height:1.6}
+.site-footer .links{
+  display:flex;gap:1.5rem;justify-content:center;margin-top:1rem;
+}
+.site-footer .links a{
+  font-size:.72rem;color:var(--text-dim);transition:color .2s;
+}
+.site-footer .links a:hover{color:var(--teal)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     HERO SECTION
+     Remplacer le contenu placeholder par image/vidéo hero
+     ═══════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <!-- ── PLACEHOLDER VISUEL (retirer quand image prête) ── -->
+  <div class="hero-placeholder">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- ── HERO CONTENT ── -->
+  <div class="hero-content">
+    <div class="hero-badge">👁️ PréventIA · Invisible Map</div>
+    <h1>Rendre l'<span class="gradient">invisible</span>,<br>visible.</h1>
+    <p class="tagline">La prévention des risques professionnels, autrement.</p>
+    <p>Les dangers les plus graves sont ceux qu'on ne voit pas. Rayonnements, bruit, gaz, UV, contraintes biomécaniques — ils sont partout, invisibles, silencieux. <strong>Invisible Map</strong> les révèle grâce à des simulations interactives pour comprendre, apprendre et agir.</p>
+    <a href="#modules" class="hero-cta">Explorer les modules ↓</a>
+  </div>
+
+  <div class="hero-scroll">
+    <span>Découvrir</span>
+    <span>↓</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     CONCEPT SECTION
+     ═══════════════════════════════════════ -->
+<section class="section" id="concept">
+  <div class="section-label">🔬 Le concept</div>
+  <h2>5 étapes pour <span>comprendre le risque</span></h2>
+  <p class="lead">
+    Chaque module suit un parcours pédagogique en 5 étapes. On part de ce que l'on voit — rien — et on finit par agir, preuves visuelles à l'appui. C'est la pédagogie par l'expérience : manipuler pour comprendre.
+  </p>
+
+  <div class="ux-flow">
+    <div class="ux-step">
+      <div class="ux-icon">👁️</div>
+      <div class="ux-label">Voir</div>
+    </div>
+    <div class="ux-step">
+      <div class="ux-icon">☢️</div>
+      <div class="ux-label">Révéler</div>
+    </div>
+    <div class="ux-step">
+      <div class="ux-icon">🎮</div>
+      <div class="ux-label">Jouer</div>
+    </div>
+    <div class="ux-step">
+      <div class="ux-icon">💡</div>
+      <div class="ux-label">Comprendre</div>
+    </div>
+    <div class="ux-step">
+      <div class="ux-icon">🛡️</div>
+      <div class="ux-label">Agir</div>
+    </div>
+  </div>
+
+  <!-- Killer feature -->
+  <div class="feature-highlight">
+    <div>
+      <h3>Avant / Après prévention</h3>
+      <p>Chaque module montre l'impact concret d'une action de prévention. Vous activez un tablier plombé, un écran antibruit, une hotte — et vous voyez immédiatement la réduction du risque. C'est ce qui convainc un employeur, un CSE, un directeur d'établissement.</p>
+    </div>
+    <div class="feature-demo">
+      <div class="feature-box avant">
+        <div class="fb-label">Avant</div>
+        <div class="fb-value">2.4 mSv</div>
+      </div>
+      <div class="feature-arrow">→</div>
+      <div class="feature-box apres">
+        <div class="fb-label">Après écran Pb</div>
+        <div class="fb-value">−90%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Niveaux -->
+  <div class="levels">
+    <div class="level-card">
+      <h4><span class="dot" style="background:var(--safe)"></span> Pédagogique</h4>
+      <p>Simulation interactive pour sensibiliser. Pas de mesure réelle — idéal pour la formation, les réunions CSE, les accueils sécurité.</p>
+    </div>
+    <div class="level-card">
+      <h4><span class="dot" style="background:var(--warning)"></span> Estimation</h4>
+      <p>Calculs basés sur des modèles physiques simplifiés. Donne un ordre de grandeur crédible pour orienter l'évaluation des risques.</p>
+    </div>
+    <div class="level-card">
+      <h4><span class="dot" style="background:var(--danger)"></span> Mesure professionnelle</h4>
+      <p>Intégration de données réelles (sonomètre, dosimètre, capteurs). Pour la métrologie terrain et les rapports réglementaires.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     MODULES
+     ═══════════════════════════════════════ -->
+<section class="section" id="modules">
+  <div class="section-label">🧩 Les modules</div>
+  <h2>La bibliothèque des <span>risques invisibles</span></h2>
+  <p class="lead">
+    Chaque risque invisible a son module dédié. Même concept, même parcours, mais chaque simulation est adaptée à la physique et à la réalité du terrain.
+  </p>
+
+  <div class="modules-grid">
+
+    <!-- ── X-RAY VISION ── -->
+    <div class="module-card live">
+      <div class="module-visual mv-xray">
+        <div class="glow"></div>
+        <div class="icon-big">☢️</div>
+      </div>
+      <div class="module-body">
+        <div class="module-status status-live">● Disponible</div>
+        <h3>X-Ray <span class="accent">Vision</span></h3>
+        <p class="module-desc">Visualisez le rayonnement ionisant diffusé autour de l'amplificateur de brillance au bloc opératoire. Particules animées, zones isodoses, loi 1/d², impact des protections (tablier Pb, paravent, scopie pulsée).</p>
+        <div class="module-tags">
+          <span class="tag">Bloc opératoire</span>
+          <span class="tag">Radioprotection</span>
+          <span class="tag">Loi 1/d²</span>
+          <span class="tag">PCR</span>
+        </div>
+        <a href="xray/xray-vision.html" class="module-cta cta-live">Lancer le module →</a>
+      </div>
+    </div>
+
+    <!-- ── NOISE VISION ── -->
+    <div class="module-card live">
+      <div class="module-visual mv-noise">
+        <div class="glow"></div>
+        <div class="icon-big">🔊</div>
+      </div>
+      <div class="module-body">
+        <div class="module-status status-live">● Disponible</div>
+        <h3>Noise <span class="accent">Vision</span></h3>
+        <p class="module-desc">Rendez visible le bruit et les ondes sonores dans l'environnement de travail. Propagation des ondes en temps réel, niveaux dB(A), impact des protections collectives (cloisons, capotage) et individuelles (PICB). Visualisation des seuils réglementaires 80/85/87 dB(A).</p>
+        <div class="module-tags">
+          <span class="tag">Bruit</span>
+          <span class="tag">Ondes sonores</span>
+          <span class="tag">PICB</span>
+          <span class="tag">dB(A)</span>
+          <span class="tag">VLEP</span>
+        </div>
+        <a href="noise/noise-vision.html" class="module-cta cta-live">Lancer le module →</a>
+      </div>
+    </div>
+
+    <!-- ── CHEM VISION ── -->
+    <div class="module-card soon">
+      <div class="module-visual mv-chem">
+        <div class="glow"></div>
+        <div class="icon-big">🧪</div>
+      </div>
+      <div class="module-body">
+        <div class="module-status status-dev">◐ En développement</div>
+        <h3>Chem <span class="accent">Vision</span></h3>
+        <p class="module-desc">Visualisez les projections chimiques et biologiques invisibles : gaz, vapeurs, gouttelettes, aérosols, nébulisation. Comparez l'exposition avec et sans hotte, avec et sans ventilation, avec et sans EPI. Simulation de la dispersion d'un nuage chimique en milieu professionnel.</p>
+        <div class="module-tags">
+          <span class="tag">CMR</span>
+          <span class="tag">Gaz</span>
+          <span class="tag">Aérosols</span>
+          <span class="tag">Hotte</span>
+          <span class="tag">VLEP</span>
+          <span class="tag">ACD</span>
+        </div>
+        <span class="module-cta cta-soon">Bientôt disponible</span>
+      </div>
+    </div>
+
+    <!-- ── UV VISION ── -->
+    <div class="module-card live">
+      <div class="module-visual mv-uv">
+        <div class="glow"></div>
+        <div class="icon-big">☀️</div>
+      </div>
+      <div class="module-body">
+        <div class="module-status status-live">● Disponible</div>
+        <h3>UV <span class="accent">Vision</span></h3>
+        <p class="module-desc">Exposition au rayonnement ultraviolet en extérieur. Visualisez l'index UV en fonction de l'heure, de la saison, de la localisation. Impact des protections (vêtements, crème solaire, lunettes). Mode caméra UV pour révéler les dégâts cutanés invisibles à l'œil nu : taches, vieillissement prématuré, lésions.</p>
+        <div class="module-tags">
+          <span class="tag">UV</span>
+          <span class="tag">BTP</span>
+          <span class="tag">Travail extérieur</span>
+          <span class="tag">Caméra UV</span>
+          <span class="tag">Peau</span>
+        </div>
+        <a href="uv/uv-vision.html" class="module-cta cta-live">Lancer le module →</a>
+      </div>
+    </div>
+
+    <!-- ── ERGO VISION ── -->
+    <div class="module-card soon">
+      <div class="module-visual mv-ergo">
+        <div class="glow"></div>
+        <div class="icon-big">🦴</div>
+      </div>
+      <div class="module-body">
+        <div class="module-status status-dev">◐ En développement</div>
+        <h3>Ergo <span class="accent">Vision</span></h3>
+        <p class="module-desc">Rendez visible ce qui souffre sous la peau. Visualisez les contraintes biomécaniques en temps réel : pression sur les disques intervertébraux, tension musculaire, compression des tissus. Vue « rayon X du corps » montrant la souffrance tissulaire en fonction de la posture adoptée.</p>
+        <div class="module-tags">
+          <span class="tag">TMS</span>
+          <span class="tag">Postures</span>
+          <span class="tag">Rachis</span>
+          <span class="tag">Manutention</span>
+          <span class="tag">REBA</span>
+        </div>
+        <span class="module-cta cta-soon">Bientôt disponible</span>
+      </div>
+    </div>
+
+    <!-- ── RADON VISION ── -->
+    <div class="module-card soon">
+      <div class="module-visual mv-radon">
+        <div class="glow"></div>
+        <div class="icon-big">🏠</div>
+      </div>
+      <div class="module-body">
+        <div class="module-status status-soon">○ Prévu</div>
+        <h3>Radon <span class="accent">Vision</span></h3>
+        <p class="module-desc">Visualisez la concentration de radon à l'intérieur des bâtiments. Simulation de l'accumulation du gaz radioactif en fonction du type d'habitation, de la géologie locale, de la ventilation, de l'étanchéité de la dalle. Zones réglementaires IRSN, seuil 300 Bq/m³, dose efficace.</p>
+        <div class="module-tags">
+          <span class="tag">Radon</span>
+          <span class="tag">Gaz radioactif</span>
+          <span class="tag">Bq/m³</span>
+          <span class="tag">IRSN</span>
+          <span class="tag">Ventilation</span>
+        </div>
+        <span class="module-cta cta-soon">Bientôt disponible</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="footer-logo">👁️ PréventIA <span>Invisible Map</span></div>
+  <p>Rendre l'invisible, visible — pour une prévention qui se voit, se comprend et s'applique.</p>
+  <p style="margin-top:.5rem">Conçu par <strong>Laure Bonnefond</strong> — IDE-ST / Préventrice / PCR<br>
+  SPSTI 23/87 · Limoges</p>
+  <div class="links">
+    <a href="https://laurebonnefond.github.io/PreventIA-LaB/" target="_blank">PréventIA-LaB</a>
+    <a href="https://github.com/laurebonnefond/PreventIA-InvisibleMap" target="_blank">GitHub</a>
+  </div>
+  <p style="margin-top:1.5rem;font-size:.55rem;color:var(--text-muted)">© 2026 Laure Bonnefond · Tous droits réservés</p>
+</footer>
+
+<!-- Smooth scroll -->
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>
