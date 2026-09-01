@@ -731,5 +731,403 @@ uiCv.addEventListener('pointerup',()=>{dragItem=null;uiCv.style.cursor='default'
 function loop(){if(noiseOn){drawWaves();drawUI()}requestAnimationFrame(loop)}
 loop();renderSources();
 </script>
+
+  
+<div class="tp-module" id="tauxPortModule">
+  <div class="tp-title">
+    <span class="tp-icon">⏱️</span>
+    TAUX DE PORT — Perte d'efficacité du protecteur auditif
+  </div>
+  <div class="tp-subtitle">
+    Un PICB ne protège efficacement que s'il est porté <strong style="color:#ff9f43">100% du temps d'exposition</strong>.
+    Retirer son protecteur même quelques minutes réduit drastiquement la protection réelle.
+  </div>
+ 
+  <div class="tp-grid">
+    <!-- Colonne gauche : contrôles -->
+    <div class="tp-controls">
+      <div class="tp-control-group">
+        <div class="tp-label">
+          <span>Atténuation nominale (SNR) du PICB</span>
+          <span class="tp-label-val ok" id="snrVal">30 dB</span>
+        </div>
+        <input type="range" class="tp-slider tp-slider-snr" id="snrSlider"
+               min="10" max="40" value="30" step="1">
+      </div>
+ 
+      <div class="tp-control-group">
+        <div class="tp-label">
+          <span>Niveau de bruit ambiant</span>
+          <span class="tp-label-val" id="noiseVal" style="color:#4a9eff">95 dB(A)</span>
+        </div>
+        <input type="range" class="tp-slider tp-slider-noise" id="noiseSlider"
+               min="80" max="110" value="95" step="1">
+      </div>
+ 
+      <div class="tp-control-group">
+        <div class="tp-label">
+          <span>Durée de non-port</span>
+          <span class="tp-label-val" id="timeVal">10 min</span>
+        </div>
+        <input type="range" class="tp-slider tp-slider-time" id="timeSlider"
+               min="0" max="240" value="10" step="1">
+      </div>
+ 
+      <!-- Jauge protection effective -->
+      <div class="tp-gauge-wrap">
+        <div class="tp-label" style="margin-bottom:4px">
+          <span>Protection effective</span>
+          <span class="tp-label-val" id="effGaugeVal">17 dB</span>
+        </div>
+        <div class="tp-gauge-bg">
+          <div class="tp-gauge-fill" id="effGauge"></div>
+        </div>
+        <div class="tp-gauge-labels">
+          <span>0 dB</span>
+          <span id="gaugeMaxLabel">30 dB (SNR)</span>
+        </div>
+      </div>
+ 
+      <!-- Graphique -->
+      <div class="tp-chart-wrap">
+        <div class="tp-chart-title">Atténuation effective vs durée de non-port</div>
+        <canvas id="tpChart"></canvas>
+      </div>
+    </div>
+ 
+    <!-- Colonne droite : résultats -->
+    <div class="tp-results">
+      <div class="tp-result-card loss">
+        <div class="tp-result-row">
+          <div>
+            <div class="tp-result-label">Perte d'efficacité</div>
+            <div class="tp-result-big red" id="lossPercent">43%</div>
+          </div>
+          <div style="text-align:right">
+            <div class="tp-result-label">Protection perdue</div>
+            <div class="tp-result-big red" id="lossDb">−13 dB</div>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="tp-result-card eff">
+        <div class="tp-result-row">
+          <div>
+            <div class="tp-result-label">Atténuation effective</div>
+            <div class="tp-result-big blue" id="effAtt">17 dB</div>
+          </div>
+          <div style="text-align:right">
+            <div class="tp-result-label">Lex,8h estimé avec PICB</div>
+            <div class="tp-result-big" id="lexEff" style="color:#c8dce8">78 dB(A)</div>
+          </div>
+        </div>
+        <div class="tp-result-row" style="margin-top:8px">
+          <div>
+            <div class="tp-result-label">Taux de port effectif</div>
+            <div class="tp-result-big green" id="wearRate">97.9%</div>
+          </div>
+          <div style="text-align:right">
+            <div class="tp-result-label">Dose sonore</div>
+            <div class="tp-result-big orange" id="doseVal">—</div>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="tp-result-card msg">
+        <div class="tp-msg-text" id="msgText">
+          En retirant votre protecteur <strong>10 minutes</strong> sur 8h,
+          vous perdez <strong>43%</strong> de sa protection.
+          L'atténuation réelle passe de 30 à seulement <strong>17 dB</strong>.
+        </div>
+      </div>
+ 
+      <!-- Tableau de référence -->
+      <div class="tp-table-wrap">
+        <table class="tp-table" id="tpTable">
+          <thead>
+            <tr>
+              <th>Non-port</th>
+              <th>0</th>
+              <th>1 min</th>
+              <th>2 min</th>
+              <th>5 min</th>
+              <th>10 min</th>
+              <th>30 min</th>
+              <th>1 h</th>
+              <th>2 h</th>
+              <th>4 h</th>
+            </tr>
+          </thead>
+          <tbody id="tpTableBody">
+          </tbody>
+        </table>
+      </div>
+ 
+      <div class="tp-footer-note">
+        ⚠️ Simulation pédagogique — Modèle énergétique simplifié (somme des doses).<br>
+        Formule : L<sub>eff</sub> = 10·log₁₀[ (t/T)·10<sup>L/10</sup> + ((T−t)/T)·10<sup>(L−A)/10</sup> ]<br>
+        T = 480 min (8h) · Seuils : 80 dB(A) action / 85 dB(A) seuil supérieur / 87 dB(A) VLEP
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<script>
+(function() {
+  const T = 480; // 8h en minutes
+  const refTimes = [0, 1, 2, 5, 10, 30, 60, 120, 240];
+  const refLabels = ['0', '1 min', '2 min', '5 min', '10 min', '30 min', '1 h', '2 h', '4 h'];
+ 
+  const snrSlider = document.getElementById('snrSlider');
+  const noiseSlider = document.getElementById('noiseSlider');
+  const timeSlider = document.getElementById('timeSlider');
+ 
+  function calcEffective(L, A, tNonPort) {
+    if (tNonPort <= 0) return { effAtt: A, effLevel: L - A, lossPercent: 0, lossDelta: 0, dose: 0, wearRate: 100 };
+    if (tNonPort >= T) return { effAtt: 0, effLevel: L, lossPercent: 100, lossDelta: -A, dose: 100, wearRate: 0 };
+ 
+    const fracExposed = tNonPort / T;
+    const fracProtected = (T - tNonPort) / T;
+    const doseExposed = fracExposed * Math.pow(10, L / 10);
+    const doseProtected = fracProtected * Math.pow(10, (L - A) / 10);
+    const totalDose = doseExposed + doseProtected;
+    const effLevel = 10 * Math.log10(totalDose);
+    const effAtt = Math.max(0, L - effLevel);
+    const lossPercent = Math.round(((A - effAtt) / A) * 100);
+    const lossDelta = Math.round(effAtt - A);
+ 
+    // Dose sonore en % du seuil 87 dB(A) VLEP sur 8h
+    const refDose = Math.pow(10, 87 / 10);
+    const dosePercent = (totalDose / refDose) * 100;
+ 
+    return {
+      effAtt: Math.round(effAtt * 10) / 10,
+      effLevel: Math.round(effLevel * 10) / 10,
+      lossPercent,
+      lossDelta,
+      dose: Math.round(dosePercent),
+      wearRate: Math.round(((T - tNonPort) / T) * 1000) / 10
+    };
+  }
+ 
+  function colorForLoss(pct) {
+    if (pct <= 10) return '#51cf66';
+    if (pct <= 30) return '#ff9f43';
+    return '#ff6b6b';
+  }
+ 
+  function drawChart(snr, noise) {
+    const canvas = document.getElementById('tpChart');
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = 200 * dpr;
+    ctx.scale(dpr, dpr);
+    const W = rect.width;
+    const H = 200;
+ 
+    ctx.clearRect(0, 0, W, H);
+ 
+    const padL = 40, padR = 14, padT = 10, padB = 28;
+    const gW = W - padL - padR;
+    const gH = H - padT - padB;
+ 
+    // Axes
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padL, padT);
+    ctx.lineTo(padL, padT + gH);
+    ctx.lineTo(padL + gW, padT + gH);
+    ctx.stroke();
+ 
+    // Y labels
+    ctx.fillStyle = '#5a7a90';
+    ctx.font = '10px system-ui';
+    ctx.textAlign = 'right';
+    for (let db = 0; db <= snr; db += 5) {
+      const y = padT + gH - (db / snr) * gH;
+      ctx.fillText(db + ' dB', padL - 4, y + 3);
+      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(padL + gW, y);
+      ctx.stroke();
+    }
+ 
+    // Courbe : atténuation effective en fonction du temps de non-port
+    const points = [];
+    for (let t = 0; t <= 240; t += 1) {
+      const r = calcEffective(noise, snr, t);
+      const x = padL + (t / 240) * gW;
+      const y = padT + gH - (r.effAtt / snr) * gH;
+      points.push({ x, y, t, att: r.effAtt });
+    }
+ 
+    // Zone de danger (en dessous de la moitié du SNR)
+    const halfY = padT + gH - (snr * 0.5 / snr) * gH;
+    ctx.fillStyle = 'rgba(255,107,107,0.06)';
+    ctx.fillRect(padL, halfY, gW, padT + gH - halfY);
+ 
+    // Ligne SNR/2
+    ctx.strokeStyle = 'rgba(255,107,107,0.3)';
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(padL, halfY);
+    ctx.lineTo(padL + gW, halfY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ff6b6b';
+    ctx.textAlign = 'left';
+    ctx.font = '9px system-ui';
+    ctx.fillText('50% SNR', padL + gW - 42, halfY - 3);
+ 
+    // Courbe gradient
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    points.forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.strokeStyle = '#4a9eff';
+    ctx.shadowColor = 'rgba(74,158,255,0.3)';
+    ctx.shadowBlur = 6;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+ 
+    // Point actuel
+    const tCurrent = parseInt(timeSlider.value);
+    if (tCurrent <= 240) {
+      const cr = calcEffective(noise, snr, tCurrent);
+      const cx = padL + (tCurrent / 240) * gW;
+      const cy = padT + gH - (cr.effAtt / snr) * gH;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff9f43';
+      ctx.shadowColor = 'rgba(255,159,67,0.5)';
+      ctx.shadowBlur = 10;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+ 
+    // X labels
+    ctx.fillStyle = '#5a7a90';
+    ctx.font = '9px system-ui';
+    ctx.textAlign = 'center';
+    const xTicks = [0, 10, 30, 60, 120, 240];
+    const xTickLabels = ['0', '10m', '30m', '1h', '2h', '4h'];
+    xTicks.forEach((t, i) => {
+      const x = padL + (t / 240) * gW;
+      ctx.fillText(xTickLabels[i], x, padT + gH + 14);
+    });
+  }
+ 
+  function buildTable(snr, noise) {
+    const tbody = document.getElementById('tpTableBody');
+    const rows = [
+      { label: 'Port effectif', unit: '%', fn: t => Math.round(((T - t) / T) * 100) },
+      { label: 'Protect° effective', unit: 'dB', fn: t => calcEffective(noise, snr, t).effAtt },
+      { label: 'Perte efficacité', unit: '%', fn: t => calcEffective(noise, snr, t).lossPercent },
+      { label: 'Lex,8h avec PICB', unit: 'dB(A)', fn: t => calcEffective(noise, snr, t).effLevel }
+    ];
+ 
+    tbody.innerHTML = rows.map(row => {
+      const cells = refTimes.map(t => {
+        const val = row.fn(t);
+        let cls = '';
+        if (row.label === 'Perte efficacité') {
+          if (val >= 50) cls = 'tp-cell-hot';
+          else if (val >= 20) cls = 'tp-cell-warm';
+          else if (val === 0) cls = 'tp-cell-ok';
+        }
+        if (row.label === 'Lex,8h avec PICB') {
+          if (val >= 87) cls = 'tp-cell-hot';
+          else if (val >= 85) cls = 'tp-cell-warm';
+        }
+        const display = (typeof val === 'number') ? (Number.isInteger(val) ? val : val.toFixed(1)) : val;
+        return `<td class="${cls}">${display}</td>`;
+      }).join('');
+      return `<tr><td style="text-align:left;color:#8aa8c0;font-weight:600">${row.label}</td>${cells}</tr>`;
+    }).join('');
+  }
+ 
+  function formatTime(m) {
+    if (m < 60) return m + ' min';
+    const h = Math.floor(m / 60);
+    const r = m % 60;
+    return r > 0 ? h + 'h' + String(r).padStart(2, '0') : h + 'h';
+  }
+ 
+  function update() {
+    const snr = parseInt(snrSlider.value);
+    const noise = parseInt(noiseSlider.value);
+    const tNon = parseInt(timeSlider.value);
+ 
+    // Affichage valeurs sliders
+    document.getElementById('snrVal').textContent = snr + ' dB';
+    document.getElementById('noiseVal').textContent = noise + ' dB(A)';
+ 
+    const timeEl = document.getElementById('timeVal');
+    timeEl.textContent = formatTime(tNon);
+    timeEl.className = 'tp-label-val ' + (tNon > 30 ? 'warn' : tNon > 5 ? 'mid' : 'ok');
+ 
+    // Calcul
+    const r = calcEffective(noise, snr, tNon);
+ 
+    // Résultats
+    document.getElementById('lossPercent').textContent = r.lossPercent + '%';
+    document.getElementById('lossDb').textContent = r.lossDelta + ' dB';
+    document.getElementById('effAtt').textContent = r.effAtt + ' dB';
+    document.getElementById('lexEff').textContent = r.effLevel + ' dB(A)';
+ 
+    const lexEl = document.getElementById('lexEff');
+    lexEl.style.color = r.effLevel >= 87 ? '#ff6b6b' : r.effLevel >= 85 ? '#ff9f43' : r.effLevel >= 80 ? '#ffd43b' : '#51cf66';
+ 
+    document.getElementById('wearRate').textContent = r.wearRate + '%';
+    document.getElementById('doseVal').textContent = r.dose + '%';
+    document.getElementById('doseVal').style.color = r.dose >= 100 ? '#ff6b6b' : r.dose >= 50 ? '#ff9f43' : '#51cf66';
+ 
+    // Jauge
+    const gauge = document.getElementById('effGauge');
+    const pct = (r.effAtt / snr) * 100;
+    gauge.style.width = pct + '%';
+    gauge.style.background = `linear-gradient(90deg, ${colorForLoss(r.lossPercent)}, ${colorForLoss(Math.max(0, r.lossPercent - 20))})`;
+    document.getElementById('effGaugeVal').textContent = r.effAtt + ' dB';
+    document.getElementById('effGaugeVal').style.color = colorForLoss(r.lossPercent);
+    document.getElementById('gaugeMaxLabel').textContent = snr + ' dB (SNR)';
+ 
+    // Message
+    const msgEl = document.getElementById('msgText');
+    if (tNon === 0) {
+      msgEl.innerHTML = `✅ PICB porté <strong>100% du temps</strong> : protection maximale de <strong>${snr} dB</strong>.`;
+    } else if (r.effLevel >= 87) {
+      msgEl.innerHTML = `🚨 En retirant votre protecteur <strong>${formatTime(tNon)}</strong> sur 8h, `
+        + `le Lex,8h atteint <strong>${r.effLevel} dB(A)</strong> — <strong>au-dessus de la VLEP (87 dB(A))</strong> ! `
+        + `Vous perdez <strong>${r.lossPercent}%</strong> de la protection.`;
+    } else if (r.lossPercent >= 50) {
+      msgEl.innerHTML = `⛔ En retirant votre protecteur <strong>${formatTime(tNon)}</strong> sur 8h, `
+        + `vous perdez <strong>plus de la moitié</strong> de sa protection ! `
+        + `L'atténuation réelle passe de ${snr} à seulement <strong>${r.effAtt} dB</strong>.`;
+    } else {
+      msgEl.innerHTML = `⚠️ En retirant votre protecteur <strong>${formatTime(tNon)}</strong> sur 8h, `
+        + `vous perdez <strong>${r.lossPercent}%</strong> de sa protection. `
+        + `L'atténuation réelle passe de ${snr} à <strong>${r.effAtt} dB</strong>.`;
+    }
+ 
+    // Chart + Table
+    drawChart(snr, noise);
+    buildTable(snr, noise);
+  }
+ 
+  snrSlider.addEventListener('input', update);
+  noiseSlider.addEventListener('input', update);
+  timeSlider.addEventListener('input', update);
+ 
+  // Init
+  update();
+  window.addEventListener('resize', () => drawChart(parseInt(snrSlider.value), parseInt(noiseSlider.value)));
+})();
+</script>
 </body>
 </html>
