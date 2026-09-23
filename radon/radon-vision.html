@@ -10,19 +10,19 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'DM Sans',system-ui,sans-serif;background:var(--navy);color:var(--text);min-height:100vh;overflow-x:hidden}
 .header{text-align:center;padding:.8rem 1rem .4rem;border-bottom:1px solid rgba(255,255,255,.06)}
-.hbadge{display:inline-flex;align-items:center;gap:.4rem;font-size:.55rem;text-transform:uppercase;letter-spacing:.14em;color:var(--teal);background:rgba(45,212,191,.12);padding:.2rem .6rem;border-radius:100px;margin-bottom:.3rem}
-.header h1{font-family:'DM Serif Display',serif;font-size:clamp(1.1rem,2.8vw,1.5rem);font-weight:400;color:#fff}
+.hbadge{display:inline-flex;align-items:center;gap:.4rem;font-size:.85rem;text-transform:uppercase;letter-spacing:.14em;color:var(--teal);background:rgba(45,212,191,.12);padding:.2rem .6rem;border-radius:100px;margin-bottom:.3rem}
+.header h1{font-family:'DM Serif Display',serif;font-size:clamp(1.3rem,3vw,1.7rem);font-weight:400;color:#fff}
 .header h1 b{color:var(--radon);font-weight:400}
-.header p{font-size:.65rem;color:var(--text-dim);margin-top:.1rem}
+.header p{font-size:.95rem;color:var(--text-dim);margin-top:.1rem}
 .app{max-width:1220px;margin:0 auto;padding:.7rem;display:grid;grid-template-columns:1fr 275px;gap:.7rem}
 @media(max-width:860px){.app{grid-template-columns:1fr}}
 .scene-wrap{background:var(--surface);border-radius:var(--radius);border:1px solid rgba(255,255,255,.05);overflow:hidden}
 .toolbar{display:flex;align-items:center;justify-content:space-between;padding:.4rem .7rem;border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap;gap:.3rem}
-.badge-p{font-size:.5rem;text-transform:uppercase;letter-spacing:.1em;padding:.15rem .45rem;border-radius:100px;background:rgba(34,197,94,.12);color:var(--safe);font-weight:600}
+.badge-p{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;padding:.15rem .45rem;border-radius:100px;background:rgba(34,197,94,.12);color:var(--safe);font-weight:600}
 .view-toggle{display:flex;gap:0;border-radius:5px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
-.view-btn{padding:.22rem .5rem;border:none;background:transparent;color:var(--text-muted);font-family:inherit;font-size:.52rem;cursor:pointer;transition:.2s}
+.view-btn{padding:.22rem .5rem;border:none;background:transparent;color:var(--text-muted);font-family:inherit;font-size:.65rem;cursor:pointer;transition:.2s}
 .view-btn.ac{background:var(--radon-dim);color:var(--radon)}
-.btn-rn{display:inline-flex;align-items:center;gap:.3rem;padding:.32rem .85rem;border-radius:100px;border:2px solid var(--radon);background:transparent;color:var(--radon);font-family:inherit;font-size:.65rem;font-weight:600;cursor:pointer;transition:.3s}
+.btn-rn{display:inline-flex;align-items:center;gap:.3rem;padding:.32rem .85rem;border-radius:100px;border:2px solid var(--radon);background:transparent;color:var(--radon);font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer;transition:.3s}
 .btn-rn:hover{background:rgba(245,158,11,.1)}
 .btn-rn.on{background:var(--radon);color:#000;box-shadow:0 0 16px rgba(245,158,11,.35)}
 .scene{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;background:#080e18}
@@ -36,7 +36,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
 .intro-b h3{font-family:'DM Serif Display',serif;font-size:.9rem;font-weight:400;margin-bottom:.12rem}
 .intro-b p{font-size:.62rem;color:var(--text-dim)}
 .steps{display:flex;justify-content:center;gap:.3rem;padding:.45rem;border-top:1px solid rgba(255,255,255,.05)}
-.st{display:flex;flex-direction:column;align-items:center;gap:.08rem;font-size:.4rem;color:var(--text-muted);opacity:.3;transition:.3s;min-width:38px}
+.st{display:flex;flex-direction:column;align-items:center;gap:.08rem;font-size:.52rem;color:var(--text-muted);opacity:.3;transition:.3s;min-width:38px}
 .st.on{opacity:1;color:var(--radon)}
 .st .d{width:5px;height:5px;border-radius:50%;background:var(--text-muted);transition:.3s}
 .st.on .d{background:var(--radon);box-shadow:0 0 4px var(--radon)}
@@ -44,45 +44,45 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
 .bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-top:.5rem}
 @media(max-width:860px){.bottom{grid-template-columns:1fr}}
 .bcard{background:var(--surface);border-radius:var(--radius);border:1px solid rgba(255,255,255,.05);padding:.6rem}
-.bcard-t{font-size:.5rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem;font-weight:600}
+.bcard-t{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem;font-weight:600}
 /* Concentration gauge */
 .conc-gauge{text-align:center}
-.conc-val{font-size:2.2rem;font-weight:700}
-.conc-unit{font-size:.8rem;color:var(--text-dim)}
-.conc-risk{font-size:.7rem;font-weight:600;margin-top:.2rem;text-transform:uppercase;letter-spacing:.08em}
+.conc-val{font-size:2.5rem;font-weight:700}
+.conc-unit{font-size:.95rem;color:var(--text-dim)}
+.conc-risk{font-size:.85rem;font-weight:600;margin-top:.2rem;text-transform:uppercase;letter-spacing:.08em}
 .conc-bar{height:10px;border-radius:5px;margin:.5rem 0 .2rem;overflow:hidden;display:flex}
 .cb-seg{flex:1}
-.conc-labels{display:flex;justify-content:space-between;font-size:.4rem;color:var(--text-muted)}
+.conc-labels{display:flex;justify-content:space-between;font-size:.52rem;color:var(--text-muted)}
 /* Dose */
 .dose-box{text-align:center;padding:.5rem;border-radius:8px;margin-top:.4rem}
-.dose-val{font-size:1.5rem;font-weight:700}
-.dose-unit{font-size:.6rem;color:var(--text-dim)}
-.dose-ref{font-size:.5rem;color:var(--text-dim);margin-top:.2rem}
+.dose-val{font-size:1.7rem;font-weight:700}
+.dose-unit{font-size:.75rem;color:var(--text-dim)}
+.dose-ref{font-size:.65rem;color:var(--text-dim);margin-top:.2rem}
 .dose-bar{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-top:.3rem}
 .dose-fill{height:100%;border-radius:3px;transition:width .4s,background .4s}
 /* Side */
 .side{display:flex;flex-direction:column;gap:.6rem;max-height:calc(100vh - 100px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent}
 .card{background:var(--surface);border-radius:var(--radius);border:1px solid rgba(255,255,255,.05);padding:.6rem}
-.ct{font-size:.5rem;text-transform:uppercase;letter-spacing:.1em;color:var(--radon);margin-bottom:.35rem}
+.ct{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--radon);margin-bottom:.35rem}
 .pg{margin-bottom:.4rem}.pg:last-child{margin-bottom:0}
-.pg-l{display:flex;justify-content:space-between;font-size:.6rem;margin-bottom:.12rem}
+.pg-l{display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:.12rem}
 .pg-v{color:var(--radon);font-weight:600}
 input[type=range]{-webkit-appearance:none;width:100%;height:3px;border-radius:2px;background:rgba(255,255,255,.1);outline:none}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--radon);cursor:pointer}
-.chk-row{display:flex;align-items:center;gap:.35rem;font-size:.58rem;margin-bottom:.25rem;cursor:pointer}
+.chk-row{display:flex;align-items:center;gap:.35rem;font-size:.72rem;margin-bottom:.25rem;cursor:pointer}
 .chk-row:last-child{margin-bottom:0}
-.chk{width:14px;height:14px;border-radius:3px;border:2px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.5rem;transition:.2s;flex-shrink:0}
+.chk{width:14px;height:14px;border-radius:3px;border:2px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.65rem;transition:.2s;flex-shrink:0}
 .chk.on{border-color:var(--teal);background:rgba(45,212,191,.15);color:var(--teal)}
 .sel-row{display:flex;gap:0;border-radius:5px;overflow:hidden;border:1px solid rgba(255,255,255,.06);margin-bottom:.3rem}
-.sel-btn{flex:1;padding:.22rem .15rem;border:none;background:transparent;color:var(--text-muted);font-family:inherit;font-size:.48rem;cursor:pointer;transition:.2s;text-align:center}
+.sel-btn{flex:1;padding:.22rem .15rem;border:none;background:transparent;color:var(--text-muted);font-family:inherit;font-size:.62rem;cursor:pointer;transition:.2s;text-align:center}
 .sel-btn.ac{background:var(--radon-dim);color:var(--radon)}
-.cmp{display:grid;grid-template-columns:1fr auto 1fr;gap:.2rem;align-items:center;padding:.3rem;border-radius:6px;background:rgba(0,0,0,.2);font-size:.55rem;text-align:center}
-.cmp .arr{font-size:.7rem;color:var(--teal)}
+.cmp{display:grid;grid-template-columns:1fr auto 1fr;gap:.2rem;align-items:center;padding:.3rem;border-radius:6px;background:rgba(0,0,0,.2);font-size:.85rem;text-align:center}
+.cmp .arr{font-size:.85rem;color:var(--teal)}
 .ped{background:linear-gradient(135deg,rgba(245,158,11,.05),rgba(45,212,191,.03));border-color:rgba(245,158,11,.1)}
-.ped-t{font-size:.58rem;line-height:1.35}
+.ped-t{font-size:.72rem;line-height:1.35}
 .hl{color:var(--radon);font-weight:600}
 .footer{text-align:center;padding:.6rem;border-top:1px solid rgba(255,255,255,.04)}
-.footer p{font-size:.45rem;color:var(--text-muted);max-width:580px;margin:0 auto;line-height:1.3}
+.footer p{font-size:.58rem;color:var(--text-muted);max-width:580px;margin:0 auto;line-height:1.3}
 </style>
 </head>
 <body>
@@ -112,7 +112,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 <div class="big">☢️</div>
 <h3>Le radon est invisible, inodore, incolore.</h3>
 <p>Activez <strong>☢️ RADON</strong> pour révéler le gaz radioactif</p>
-<p style="margin-top:.2rem;font-size:.5rem;color:rgba(255,255,255,.2)">2e cause de cancer du poumon en France</p>
+<p style="margin-top:.2rem;font-size:.65rem;color:rgba(255,255,255,.2)">2e cause de cancer du poumon en France</p>
 </div>
 </div>
 </div>
@@ -150,7 +150,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 <div class="dose-bar"><div class="dose-fill" id="doseFill"></div></div>
 <div class="dose-ref">Seuil professionnel : 6 mSv/an</div>
 </div>
-<div style="font-size:.45rem;color:var(--text-muted);margin-top:.3rem;line-height:1.3" id="doseDetail"></div>
+<div style="font-size:.58rem;color:var(--text-muted);margin-top:.3rem;line-height:1.3" id="doseDetail"></div>
 </div>
 <div class="bcard" id="cmpP" style="display:none">
 <div class="bcard-t" style="color:var(--teal)">🛡️ Avant / Après prévention</div>
@@ -241,12 +241,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 
 <!-- Types de sol -->
 <div style="background:var(--surface);border-radius:var(--radius);border:1px solid rgba(255,255,255,.05);padding:1rem;margin-bottom:.6rem">
-<div style="font-size:.5rem;text-transform:uppercase;letter-spacing:.1em;color:var(--radon);margin-bottom:.5rem;font-weight:600">🪨 Types de sol et potentiel radon</div>
+<div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--radon);margin-bottom:.5rem;font-weight:600">🪨 Types de sol et potentiel radon</div>
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem">
 
 <div style="padding:.6rem;border-radius:8px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.1)">
-<div style="font-weight:700;color:#22c55e;font-size:.7rem;margin-bottom:.3rem">🟢 Sédimentaire</div>
-<div style="font-size:.52rem;color:var(--text-dim);line-height:1.45">
+<div style="font-weight:700;color:#22c55e;font-size:.85rem;margin-bottom:.3rem">🟢 Sédimentaire</div>
+<div style="font-size:.65rem;color:var(--text-dim);line-height:1.45">
 <strong>Calcaire, argile, sable, grès</strong><br>
 Faible teneur en uranium naturel.<br>
 Concentration typique : <strong>20–80 Bq/m³</strong><br>
@@ -255,8 +255,8 @@ Zones : bassins parisien, aquitain, plaines alluviales.<br>
 </div></div>
 
 <div style="padding:.6rem;border-radius:8px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.1)">
-<div style="font-weight:700;color:#f59e0b;font-size:.7rem;margin-bottom:.3rem">🟡 Granitique</div>
-<div style="font-size:.52rem;color:var(--text-dim);line-height:1.45">
+<div style="font-weight:700;color:#f59e0b;font-size:.85rem;margin-bottom:.3rem">🟡 Granitique</div>
+<div style="font-size:.65rem;color:var(--text-dim);line-height:1.45">
 <strong>Granite, gneiss, schiste, roches métamorphiques</strong><br>
 Teneur en uranium modérée à élevée.<br>
 Concentration typique : <strong>100–300 Bq/m³</strong><br>
@@ -265,8 +265,8 @@ Zones : Massif central, Bretagne, Vosges, Corse.<br>
 </div></div>
 
 <div style="padding:.6rem;border-radius:8px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.1)">
-<div style="font-weight:700;color:#ef4444;font-size:.7rem;margin-bottom:.3rem">🔴 Uranifère</div>
-<div style="font-size:.52rem;color:var(--text-dim);line-height:1.45">
+<div style="font-weight:700;color:#ef4444;font-size:.85rem;margin-bottom:.3rem">🔴 Uranifère</div>
+<div style="font-size:.65rem;color:var(--text-dim);line-height:1.45">
 <strong>Granite riche en uranium, anciens sites miniers</strong><br>
 Teneur en uranium très élevée (pegmatites, leucogranites).<br>
 Concentration typique : <strong>300–1000+ Bq/m³</strong><br>
@@ -275,46 +275,46 @@ Zones : Nord Limousin (La Crouzille), Forez, Morvan, Lozère.<br>
 </div></div>
 
 </div>
-<div style="font-size:.45rem;color:var(--text-muted);margin-top:.4rem;line-height:1.3">
+<div style="font-size:.58rem;color:var(--text-muted);margin-top:.4rem;line-height:1.3">
 Le granite contient naturellement de l'uranium-238 qui se désintègre en radium-226, puis en radon-222 (gaz). Plus la roche est riche en uranium, plus l'émission de radon est forte. Les sols uranifères correspondent aux anciens gisements d'uranium exploités (ex: division minière de La Crouzille en Haute-Vienne, fermée en 2001).
 </div>
 </div>
 
 <!-- Calculette IRSN par commune -->
 <div style="background:var(--surface);border-radius:var(--radius);border:1px solid rgba(255,255,255,.05);padding:1rem;margin-bottom:.6rem">
-<div style="font-size:.5rem;text-transform:uppercase;letter-spacing:.1em;color:var(--radon);margin-bottom:.5rem;font-weight:600">🗺️ Potentiel radon par commune — Données IRSN</div>
+<div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--radon);margin-bottom:.5rem;font-weight:600">🗺️ Potentiel radon par commune — Données IRSN</div>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
 <div>
-<label style="font-size:.55rem;color:var(--text-dim);display:block;margin-bottom:.2rem">Rechercher une commune ou un département :</label>
+<label style="font-size:.85rem;color:var(--text-dim);display:block;margin-bottom:.2rem">Rechercher une commune ou un département :</label>
 <input type="text" id="communeSearch" placeholder="Ex: Limoges, Guéret, Aubusson, 87, Creuse..." 
-  style="width:100%;padding:.45rem .6rem;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.2);color:var(--text);font-family:inherit;font-size:.6rem;outline:none"
+  style="width:100%;padding:.45rem .6rem;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.2);color:var(--text);font-family:inherit;font-size:.75rem;outline:none"
   oninput="searchCommune()">
 <div id="communeResults" style="margin-top:.3rem;max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent"></div>
 
 <div style="margin-top:.4rem;padding:.4rem;border-radius:6px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.08)">
-<div style="font-size:.45rem;color:var(--ergo,#3b82f6);font-weight:600;margin-bottom:.15rem">🔗 Recherche précise IRSN</div>
-<div style="font-size:.45rem;color:var(--text-dim);line-height:1.35;margin-bottom:.2rem">Pour le zonage officiel exact de votre commune, consultez la cartographie IRSN :</div>
+<div style="font-size:.58rem;color:var(--ergo,#3b82f6);font-weight:600;margin-bottom:.15rem">🔗 Recherche précise IRSN</div>
+<div style="font-size:.58rem;color:var(--text-dim);line-height:1.35;margin-bottom:.2rem">Pour le zonage officiel exact de votre commune, consultez la cartographie IRSN :</div>
 <a href="https://www.irsn.fr/savoir-comprendre/environnement/connaitre-potentiel-radon-ma-commune" target="_blank" 
-  style="display:inline-block;padding:.25rem .5rem;border-radius:4px;background:rgba(245,158,11,.1);color:var(--radon);font-size:.5rem;font-weight:600;text-decoration:none">
+  style="display:inline-block;padding:.25rem .5rem;border-radius:4px;background:rgba(245,158,11,.1);color:var(--radon);font-size:.65rem;font-weight:600;text-decoration:none">
   → Carte IRSN potentiel radon par commune</a>
 </div>
 </div>
 
 <div>
-<div id="communeDetail" style="padding:.6rem;border-radius:8px;background:rgba(0,0,0,.15);font-size:.52rem;color:var(--text-dim);line-height:1.5;min-height:100px">
+<div id="communeDetail" style="padding:.6rem;border-radius:8px;background:rgba(0,0,0,.15);font-size:.65rem;color:var(--text-dim);line-height:1.5;min-height:100px">
 Sélectionnez une commune pour voir son potentiel radon, le type de sol et estimer la dose professionnelle.
 </div>
 
 <div id="communeCalc" style="display:none;margin-top:.4rem;padding:.6rem;border-radius:8px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.08)">
-<div style="font-size:.48rem;text-transform:uppercase;letter-spacing:.06em;color:var(--radon);margin-bottom:.3rem;font-weight:600">📊 Estimation dose professionnelle</div>
+<div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;color:var(--radon);margin-bottom:.3rem;font-weight:600">📊 Estimation dose professionnelle</div>
 <div style="display:flex;gap:.4rem;margin-bottom:.3rem;flex-wrap:wrap">
-<div><label style="font-size:.42rem;color:var(--text-muted)">Bq/m³</label><br><input type="number" id="cCalcBq" value="200" min="10" max="5000" style="width:75px;padding:.22rem .3rem;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);color:var(--radon);font-family:inherit;font-size:.6rem;font-weight:700" oninput="calcCommuneDose()"></div>
-<div><label style="font-size:.42rem;color:var(--text-muted)">h/jour</label><br><input type="number" id="cCalcH" value="7" min="1" max="12" style="width:50px;padding:.22rem .3rem;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);color:var(--text);font-family:inherit;font-size:.6rem" oninput="calcCommuneDose()"></div>
-<div><label style="font-size:.42rem;color:var(--text-muted)">j/an</label><br><input type="number" id="cCalcJ" value="220" min="50" max="365" style="width:50px;padding:.22rem .3rem;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);color:var(--text);font-family:inherit;font-size:.6rem" oninput="calcCommuneDose()"></div>
+<div><label style="font-size:.55rem;color:var(--text-muted)">Bq/m³</label><br><input type="number" id="cCalcBq" value="200" min="10" max="5000" style="width:75px;padding:.22rem .3rem;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);color:var(--radon);font-family:inherit;font-size:.75rem;font-weight:700" oninput="calcCommuneDose()"></div>
+<div><label style="font-size:.55rem;color:var(--text-muted)">h/jour</label><br><input type="number" id="cCalcH" value="7" min="1" max="12" style="width:50px;padding:.22rem .3rem;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);color:var(--text);font-family:inherit;font-size:.75rem" oninput="calcCommuneDose()"></div>
+<div><label style="font-size:.55rem;color:var(--text-muted)">j/an</label><br><input type="number" id="cCalcJ" value="220" min="50" max="365" style="width:50px;padding:.22rem .3rem;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);color:var(--text);font-family:inherit;font-size:.75rem" oninput="calcCommuneDose()"></div>
 </div>
-<div id="cCalcResult" style="font-size:.6rem;font-weight:700;margin-top:.15rem"></div>
-<div style="font-size:.38rem;color:var(--text-muted);margin-top:.1rem">Dose = C × T × FC (6×10⁻⁶ mSv/(Bq·h/m³)) — arrêté 16/11/2023</div>
+<div id="cCalcResult" style="font-size:.75rem;font-weight:700;margin-top:.15rem"></div>
+<div style="font-size:.5rem;color:var(--text-muted);margin-top:.1rem">Dose = C × T × FC (6×10⁻⁶ mSv/(Bq·h/m³)) — arrêté 16/11/2023</div>
 </div>
 </div>
 </div>
@@ -322,21 +322,21 @@ Sélectionnez une commune pour voir son potentiel radon, le type de sol et estim
 
 <!-- ═══ EXPLICATION PHYSIQUE / CHIMIQUE DE LA SIMULATION ═══ -->
 <div style="background:var(--surface);border-radius:var(--radius);border:1px solid rgba(255,255,255,.05);padding:1rem;margin-bottom:.6rem">
-<div style="font-size:.5rem;text-transform:uppercase;letter-spacing:.1em;color:var(--radon);margin-bottom:.5rem;font-weight:600">⚛️ Sur quoi s'appuie la simulation ? — Physique & chimie du radon</div>
+<div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--radon);margin-bottom:.5rem;font-weight:600">⚛️ Sur quoi s'appuie la simulation ? — Physique & chimie du radon</div>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
-<div style="font-size:.5rem;color:var(--text-dim);line-height:1.5">
-<div style="font-weight:700;color:var(--radon);font-size:.58rem;margin-bottom:.25rem">1. Chaîne de désintégration radioactive</div>
+<div style="font-size:.65rem;color:var(--text-dim);line-height:1.5">
+<div style="font-weight:700;color:var(--radon);font-size:.72rem;margin-bottom:.25rem">1. Chaîne de désintégration radioactive</div>
 Le radon-222 (Rn-222) est produit par la désintégration naturelle de l'uranium-238 présent dans les roches :
 
-<div style="margin:.4rem 0;padding:.4rem;border-radius:6px;background:rgba(0,0,0,.2);font-family:monospace;font-size:.48rem;text-align:center;line-height:1.8;color:var(--text)">
-<span style="color:#3b82f6">²³⁸U</span> → ... → <span style="color:#a855f7">²²⁶Ra</span> → <span style="color:var(--radon);font-weight:700;font-size:.55rem">²²²Rn (GAZ)</span> → <span style="color:#ef4444">²¹⁸Po</span> → ²¹⁴Pb → ²¹⁴Bi → <span style="color:#ef4444">²¹⁴Po</span> → ²¹⁰Pb<br>
-<span style="font-size:.4rem;color:var(--text-muted)">uranium → radium → <strong>RADON</strong> → polonium (descendants solides)</span>
+<div style="margin:.4rem 0;padding:.4rem;border-radius:6px;background:rgba(0,0,0,.2);font-family:monospace;font-size:.62rem;text-align:center;line-height:1.8;color:var(--text)">
+<span style="color:#3b82f6">²³⁸U</span> → ... → <span style="color:#a855f7">²²⁶Ra</span> → <span style="color:var(--radon);font-weight:700;font-size:.85rem">²²²Rn (GAZ)</span> → <span style="color:#ef4444">²¹⁸Po</span> → ²¹⁴Pb → ²¹⁴Bi → <span style="color:#ef4444">²¹⁴Po</span> → ²¹⁰Pb<br>
+<span style="font-size:.52rem;color:var(--text-muted)">uranium → radium → <strong>RADON</strong> → polonium (descendants solides)</span>
 </div>
 
 Le <strong>radium-226</strong> (dans la roche) se désintègre en <strong>radon-222</strong> — le seul élément gazeux de la chaîne. Sa <strong>demi-vie = 3,82 jours</strong> : assez long pour migrer du sol vers les bâtiments, assez court pour se renouveler en continu.
 
-<div style="font-weight:700;color:var(--radon);font-size:.58rem;margin:.4rem 0 .2rem">2. Émanation et transport</div>
+<div style="font-weight:700;color:var(--radon);font-size:.72rem;margin:.4rem 0 .2rem">2. Émanation et transport</div>
 Le Rn-222 <strong>diffuse</strong> à travers les pores du sol (convection + diffusion moléculaire). La force motrice est le <strong>gradient de pression</strong> entre le sol et l'intérieur du bâtiment (effet cheminée, dépression due au vent et au chauffage). Il entre par :
 <br>• Fissures dans la dalle béton
 <br>• Passages de canalisations non étanchéifiés
@@ -344,16 +344,16 @@ Le Rn-222 <strong>diffuse</strong> à travers les pores du sol (convection + dif
 <br>• Remontées par les vides sanitaires
 </div>
 
-<div style="font-size:.5rem;color:var(--text-dim);line-height:1.5">
-<div style="font-weight:700;color:var(--radon);font-size:.58rem;margin-bottom:.25rem">3. Pourquoi c'est dangereux ?</div>
+<div style="font-size:.65rem;color:var(--text-dim);line-height:1.5">
+<div style="font-weight:700;color:var(--radon);font-size:.72rem;margin-bottom:.25rem">3. Pourquoi c'est dangereux ?</div>
 Le Rn-222 et ses descendants (<sup>218</sup>Po, <sup>214</sup>Po) émettent des <strong>particules alpha (α)</strong> — très ionisantes, très courte portée (~5 cm dans l'air). Inhalées, elles irradient directement les cellules de l'épithélium bronchique → <strong>cancer du poumon</strong>.
 
-<div style="margin:.3rem 0;padding:.3rem;border-radius:5px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.1);font-size:.48rem">
+<div style="margin:.3rem 0;padding:.3rem;border-radius:5px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.1);font-size:.62rem">
 ⚠️ <strong>2e cause de cancer du poumon en France</strong> (après le tabac). ~3 000 décès/an attribués au radon (IRSN/InVS).
 </div>
 
-<div style="font-weight:700;color:var(--radon);font-size:.58rem;margin:.4rem 0 .2rem">4. Ce que représente la simulation</div>
-<table style="width:100%;font-size:.48rem;border-collapse:collapse;margin-top:.2rem">
+<div style="font-weight:700;color:var(--radon);font-size:.72rem;margin:.4rem 0 .2rem">4. Ce que représente la simulation</div>
+<table style="width:100%;font-size:.62rem;border-collapse:collapse;margin-top:.2rem">
 <tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:.15rem .3rem;color:var(--radon)">☢️ Fumée colorée</td><td style="padding:.15rem .3rem">Concentration en Bq/m³ — chaque <strong>Becquerel = 1 désintégration/seconde</strong>. Plus la fumée est dense/rouge, plus l'activité volumique est élevée.</td></tr>
 <tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:.15rem .3rem;color:var(--radon)">🔴→🟡→🟢 Couleurs</td><td style="padding:.15rem .3rem"><strong>Rouge</strong> (>300 Bq/m³) = seuil réglementaire dépassé. <strong>Orange</strong> = vigilance. <strong>Vert</strong> = exposition faible. Basé sur l'arrêté du 27/06/2018.</td></tr>
 <tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:.15rem .3rem;color:var(--radon)">↑ Montée du gaz</td><td style="padding:.15rem .3rem">Simule la <strong>convection thermique</strong> : le radon monte par effet cheminée (air chaud intérieur < pression atmosphérique → aspiration du gaz du sol).</td></tr>
@@ -434,11 +434,11 @@ function searchCommune(){
   );
   res.innerHTML=matches.slice(0,10).map(c=>{
     const zCol=c.zone===3?'#ef4444':c.zone===2?'#f59e0b':'#22c55e';
-    return`<div onclick="selectCommune('${c.c}')" style="padding:.25rem .4rem;margin-bottom:.12rem;border-radius:5px;background:rgba(0,0,0,.12);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:.5rem;border-left:3px solid ${zCol};transition:.15s" onmouseover="this.style.background='rgba(245,158,11,.08)'" onmouseout="this.style.background='rgba(0,0,0,.12)'">
+    return`<div onclick="selectCommune('${c.c}')" style="padding:.25rem .4rem;margin-bottom:.12rem;border-radius:5px;background:rgba(0,0,0,.12);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:.65rem;border-left:3px solid ${zCol};transition:.15s" onmouseover="this.style.background='rgba(245,158,11,.08)'" onmouseout="this.style.background='rgba(0,0,0,.12)'">
       <span><strong>${c.c}</strong> <span style="color:var(--text-muted)">(${c.d} ${c.nom})</span></span>
-      <span style="color:${zCol};font-weight:600;font-size:.42rem;white-space:nowrap">Zone ${c.zone} · ${c.bq} Bq/m³</span>
+      <span style="color:${zCol};font-weight:600;font-size:.55rem;white-space:nowrap">Zone ${c.zone} · ${c.bq} Bq/m³</span>
     </div>`}).join('');
-  if(matches.length===0)res.innerHTML='<div style="font-size:.48rem;color:var(--text-muted);padding:.3rem">Aucune commune trouvée. Essayez le <a href="https://www.irsn.fr/savoir-comprendre/environnement/connaitre-potentiel-radon-ma-commune" target="_blank" style="color:var(--radon)">site IRSN</a> pour une recherche exhaustive.</div>';
+  if(matches.length===0)res.innerHTML='<div style="font-size:.62rem;color:var(--text-muted);padding:.3rem">Aucune commune trouvée. Essayez le <a href="https://www.irsn.fr/savoir-comprendre/environnement/connaitre-potentiel-radon-ma-commune" target="_blank" style="color:var(--radon)">site IRSN</a> pour une recherche exhaustive.</div>';
 }
 
 function selectCommune(name){
@@ -448,14 +448,14 @@ function selectCommune(name){
   const solType=c.sol.toLowerCase().includes('uranif')?'🔴 Uranifère':c.sol.toLowerCase().includes('granit')?'🟡 Granitique':'🟢 Sédimentaire';
   document.getElementById('communeDetail').innerHTML=`
     <div style="font-size:.75rem;font-weight:700;color:${zCol};margin-bottom:.3rem">
-      ${c.c} <span style="font-size:.5rem;color:var(--text-muted)">(${c.d} — ${c.nom})</span>
+      ${c.c} <span style="font-size:.65rem;color:var(--text-muted)">(${c.d} — ${c.nom})</span>
     </div>
-    <div style="display:inline-block;padding:.15rem .4rem;border-radius:4px;background:${zCol}22;color:${zCol};font-size:.48rem;font-weight:600;margin-bottom:.3rem">
+    <div style="display:inline-block;padding:.15rem .4rem;border-radius:4px;background:${zCol}22;color:${zCol};font-size:.62rem;font-weight:600;margin-bottom:.3rem">
       Zone ${c.zone} — Potentiel ${zLab}
     </div>
-    <div style="font-size:.5rem;line-height:1.55;color:var(--text-dim);margin-top:.2rem">
+    <div style="font-size:.65rem;line-height:1.55;color:var(--text-dim);margin-top:.2rem">
       <strong>Type de sol :</strong> ${solType} — ${c.sol}<br>
-      <strong>Concentration typique :</strong> <span style="color:${zCol};font-weight:700;font-size:.6rem">${c.bq} Bq/m³</span><br>
+      <strong>Concentration typique :</strong> <span style="color:${zCol};font-weight:700;font-size:.75rem">${c.bq} Bq/m³</span><br>
       <strong>Contexte :</strong> ${c.detail}<br>
       ${c.zone===3?'<br><span style="color:#ef4444;font-weight:700">⛔ Mesures radon obligatoires</span> (arrêté 27/06/2018). Obligation employeur : mesurage lieux de travail RDC et sous-sol (art. R.4451-14 C. trav.)':''}
       ${c.bq>=300?'<br><span style="color:#ef4444">⚠️ Dépasse le seuil de référence de 300 Bq/m³</span>':''}
@@ -475,15 +475,15 @@ function calcCommuneDose(){
   const risk=dose>6?'⛔ DÉPASSEMENT seuil professionnel (6 mSv/an)':dose>3?'⚠️ Approche du seuil — surveillance renforcée':dose>1?'⚡ Exposition notable — vérifier ventilation':'✓ Exposition acceptable';
   document.getElementById('cCalcResult').innerHTML=`
     <span style="color:${dCol};font-size:.9rem">${dose.toFixed(2)} mSv/an</span>
-    <span style="font-size:.45rem;color:var(--text-dim)"> = ${bq} Bq/m³ × ${hAn} h/an × 6×10⁻⁶</span><br>
-    <span style="font-size:.48rem;color:${dCol}">${risk}</span>`;
+    <span style="font-size:.58rem;color:var(--text-dim)"> = ${bq} Bq/m³ × ${hAn} h/an × 6×10⁻⁶</span><br>
+    <span style="font-size:.62rem;color:${dCol}">${risk}</span>`;
 }
 </script>
 
 <footer class="footer">
 <p>⚠️ Simulation exclusivement <strong>pédagogique</strong>. Ne constitue ni mesure réglementaire ni diagnostic radon. Seules des mesures par dosimètres radon peuvent évaluer l'exposition réelle.<br>
 Niveau de référence français : <strong>300 Bq/m³</strong> en moyenne annuelle. Dose : formule CIPR, FC = 6×10⁻⁶ mSv/(Bq·h/m³) (arrêté 16/11/2023). Réf. : IRSN, INRS ED 6340/6373.</p>
-<p style="margin-top:.2rem;font-size:.4rem;color:rgba(255,255,255,.12)">PréventIA Invisible Map · © Laure Bonnefond · 2026</p>
+<p style="margin-top:.2rem;font-size:.52rem;color:rgba(255,255,255,.12)">PréventIA Invisible Map · © Laure Bonnefond · 2026</p>
 </footer>
 
 <script>
@@ -811,7 +811,7 @@ function updateCmp(conc){
   const doseAfter=calcDose(conc);
   const redConc=Math.round((1-conc/prevConc)*100);
   const redDose=Math.round((1-doseAfter.dose/doseBefore.dose)*100);
-  const html=`<div class="cmp"><div><div style="font-size:.45rem;color:var(--danger)">AVANT</div><div style="font-weight:700;color:var(--danger)">${prevConc} Bq/m³</div><div style="font-size:.45rem;color:var(--text-muted)">${doseBefore.dose.toFixed(2)} mSv/an</div></div><div class="arr">→</div><div><div style="font-size:.45rem;color:var(--safe)">APRÈS</div><div style="font-weight:700;color:var(--safe)">${conc} Bq/m³</div><div style="font-size:.45rem;color:var(--safe)">−${Math.max(0,redConc)}% · ${doseAfter.dose.toFixed(2)} mSv</div></div></div>`;
+  const html=`<div class="cmp"><div><div style="font-size:.58rem;color:var(--danger)">AVANT</div><div style="font-weight:700;color:var(--danger)">${prevConc} Bq/m³</div><div style="font-size:.58rem;color:var(--text-muted)">${doseBefore.dose.toFixed(2)} mSv/an</div></div><div class="arr">→</div><div><div style="font-size:.58rem;color:var(--safe)">APRÈS</div><div style="font-weight:700;color:var(--safe)">${conc} Bq/m³</div><div style="font-size:.58rem;color:var(--safe)">−${Math.max(0,redConc)}% · ${doseAfter.dose.toFixed(2)} mSv</div></div></div>`;
   ['cmpP','cmpS'].forEach(id=>document.getElementById(id).style.display='block');
   document.getElementById('cmpC').innerHTML=html;
   document.getElementById('cmpSC').innerHTML=html;
