@@ -200,6 +200,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 <div class="sel-row">
 <button class="sel-btn" onclick="setVent('aucune',this)">Aucune</button>
 <button class="sel-btn ac" onclick="setVent('nat',this)">Naturelle</button>
+<button class="sel-btn" onclick="setVent('vmi',this)">VMI</button>
 <button class="sel-btn" onclick="setVent('vmcsf',this)">VMC SF</button>
 <button class="sel-btn" onclick="setVent('vmcdf',this)">VMC DF</button>
 </div></div>
@@ -281,140 +282,201 @@ Le granite contient naturellement de l'uranium-238 qui se désintègre en radium
 
 <!-- Calculette IRSN par commune -->
 <div style="background:var(--surface);border-radius:var(--radius);border:1px solid rgba(255,255,255,.05);padding:1rem;margin-bottom:.6rem">
-<div style="font-size:.5rem;text-transform:uppercase;letter-spacing:.1em;color:var(--radon);margin-bottom:.5rem;font-weight:600">🗺️ Potentiel radon par département — Données IRSN</div>
+<div style="font-size:.5rem;text-transform:uppercase;letter-spacing:.1em;color:var(--radon);margin-bottom:.5rem;font-weight:600">🗺️ Potentiel radon par commune — Données IRSN</div>
 
-<div style="display:flex;gap:.5rem;align-items:flex-start;flex-wrap:wrap">
-<div style="flex:1;min-width:250px">
-<label style="font-size:.55rem;color:var(--text-dim);display:block;margin-bottom:.2rem">Rechercher un département :</label>
-<input type="text" id="deptSearch" placeholder="Ex: 87, Haute-Vienne, Creuse..." 
-  style="width:100%;padding:.4rem .6rem;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.2);color:var(--text);font-family:inherit;font-size:.6rem;outline:none"
-  oninput="searchDept()">
-<div id="deptResults" style="margin-top:.3rem;max-height:200px;overflow-y:auto"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+<div>
+<label style="font-size:.55rem;color:var(--text-dim);display:block;margin-bottom:.2rem">Rechercher une commune ou un département :</label>
+<input type="text" id="communeSearch" placeholder="Ex: Limoges, Guéret, Aubusson, 87, Creuse..." 
+  style="width:100%;padding:.45rem .6rem;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.2);color:var(--text);font-family:inherit;font-size:.6rem;outline:none"
+  oninput="searchCommune()">
+<div id="communeResults" style="margin-top:.3rem;max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent"></div>
+
+<div style="margin-top:.4rem;padding:.4rem;border-radius:6px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.08)">
+<div style="font-size:.45rem;color:var(--ergo,#3b82f6);font-weight:600;margin-bottom:.15rem">🔗 Recherche précise IRSN</div>
+<div style="font-size:.45rem;color:var(--text-dim);line-height:1.35;margin-bottom:.2rem">Pour le zonage officiel exact de votre commune, consultez la cartographie IRSN :</div>
+<a href="https://www.irsn.fr/savoir-comprendre/environnement/connaitre-potentiel-radon-ma-commune" target="_blank" 
+  style="display:inline-block;padding:.25rem .5rem;border-radius:4px;background:rgba(245,158,11,.1);color:var(--radon);font-size:.5rem;font-weight:600;text-decoration:none">
+  → Carte IRSN potentiel radon par commune</a>
+</div>
 </div>
 
-<div style="flex:1;min-width:250px">
-<div id="deptDetail" style="padding:.5rem;border-radius:8px;background:rgba(0,0,0,.15);font-size:.52rem;color:var(--text-dim);line-height:1.5">
-Sélectionnez un département pour voir son potentiel radon et estimer la dose professionnelle.
+<div>
+<div id="communeDetail" style="padding:.6rem;border-radius:8px;background:rgba(0,0,0,.15);font-size:.52rem;color:var(--text-dim);line-height:1.5;min-height:100px">
+Sélectionnez une commune pour voir son potentiel radon, le type de sol et estimer la dose professionnelle.
 </div>
 
-<div id="deptCalc" style="display:none;margin-top:.4rem;padding:.5rem;border-radius:8px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.08)">
+<div id="communeCalc" style="display:none;margin-top:.4rem;padding:.6rem;border-radius:8px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.08)">
 <div style="font-size:.48rem;text-transform:uppercase;letter-spacing:.06em;color:var(--radon);margin-bottom:.3rem;font-weight:600">📊 Estimation dose professionnelle</div>
 <div style="display:flex;gap:.4rem;margin-bottom:.3rem;flex-wrap:wrap">
-<div><label style="font-size:.45rem;color:var(--text-muted)">Bq/m³ estimé</label><br><input type="number" id="dCalcBq" value="200" min="10" max="5000" style="width:80px;padding:.2rem .3rem;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);color:var(--radon);font-family:inherit;font-size:.6rem;font-weight:700" oninput="calcDeptDose()"></div>
-<div><label style="font-size:.45rem;color:var(--text-muted)">h/jour</label><br><input type="number" id="dCalcH" value="7" min="1" max="12" style="width:55px;padding:.2rem .3rem;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);color:var(--text);font-family:inherit;font-size:.6rem" oninput="calcDeptDose()"></div>
-<div><label style="font-size:.45rem;color:var(--text-muted)">j/an</label><br><input type="number" id="dCalcJ" value="220" min="50" max="365" style="width:55px;padding:.2rem .3rem;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);color:var(--text);font-family:inherit;font-size:.6rem" oninput="calcDeptDose()"></div>
+<div><label style="font-size:.42rem;color:var(--text-muted)">Bq/m³</label><br><input type="number" id="cCalcBq" value="200" min="10" max="5000" style="width:75px;padding:.22rem .3rem;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);color:var(--radon);font-family:inherit;font-size:.6rem;font-weight:700" oninput="calcCommuneDose()"></div>
+<div><label style="font-size:.42rem;color:var(--text-muted)">h/jour</label><br><input type="number" id="cCalcH" value="7" min="1" max="12" style="width:50px;padding:.22rem .3rem;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);color:var(--text);font-family:inherit;font-size:.6rem" oninput="calcCommuneDose()"></div>
+<div><label style="font-size:.42rem;color:var(--text-muted)">j/an</label><br><input type="number" id="cCalcJ" value="220" min="50" max="365" style="width:50px;padding:.22rem .3rem;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.2);color:var(--text);font-family:inherit;font-size:.6rem" oninput="calcCommuneDose()"></div>
 </div>
-<div id="dCalcResult" style="font-size:.6rem;font-weight:700;margin-top:.2rem"></div>
-<div style="font-size:.4rem;color:var(--text-muted);margin-top:.15rem">FC = 6×10⁻⁶ mSv/(Bq·h/m³) — arrêté 16/11/2023</div>
+<div id="cCalcResult" style="font-size:.6rem;font-weight:700;margin-top:.15rem"></div>
+<div style="font-size:.38rem;color:var(--text-muted);margin-top:.1rem">Dose = C × T × FC (6×10⁻⁶ mSv/(Bq·h/m³)) — arrêté 16/11/2023</div>
+</div>
 </div>
 </div>
 </div>
 
-<div style="font-size:.42rem;color:var(--text-muted);margin-top:.4rem">
-Source : <a href="https://www.irsn.fr/savoir-comprendre/environnement/connaitre-potentiel-radon-ma-commune" target="_blank" style="color:var(--radon)">IRSN — Connaître le potentiel radon de ma commune</a> · Arrêté du 27 juin 2018 (zonage radon)
+<!-- ═══ EXPLICATION PHYSIQUE / CHIMIQUE DE LA SIMULATION ═══ -->
+<div style="background:var(--surface);border-radius:var(--radius);border:1px solid rgba(255,255,255,.05);padding:1rem;margin-bottom:.6rem">
+<div style="font-size:.5rem;text-transform:uppercase;letter-spacing:.1em;color:var(--radon);margin-bottom:.5rem;font-weight:600">⚛️ Sur quoi s'appuie la simulation ? — Physique & chimie du radon</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+<div style="font-size:.5rem;color:var(--text-dim);line-height:1.5">
+<div style="font-weight:700;color:var(--radon);font-size:.58rem;margin-bottom:.25rem">1. Chaîne de désintégration radioactive</div>
+Le radon-222 (Rn-222) est produit par la désintégration naturelle de l'uranium-238 présent dans les roches :
+
+<div style="margin:.4rem 0;padding:.4rem;border-radius:6px;background:rgba(0,0,0,.2);font-family:monospace;font-size:.48rem;text-align:center;line-height:1.8;color:var(--text)">
+<span style="color:#3b82f6">²³⁸U</span> → ... → <span style="color:#a855f7">²²⁶Ra</span> → <span style="color:var(--radon);font-weight:700;font-size:.55rem">²²²Rn (GAZ)</span> → <span style="color:#ef4444">²¹⁸Po</span> → ²¹⁴Pb → ²¹⁴Bi → <span style="color:#ef4444">²¹⁴Po</span> → ²¹⁰Pb<br>
+<span style="font-size:.4rem;color:var(--text-muted)">uranium → radium → <strong>RADON</strong> → polonium (descendants solides)</span>
+</div>
+
+Le <strong>radium-226</strong> (dans la roche) se désintègre en <strong>radon-222</strong> — le seul élément gazeux de la chaîne. Sa <strong>demi-vie = 3,82 jours</strong> : assez long pour migrer du sol vers les bâtiments, assez court pour se renouveler en continu.
+
+<div style="font-weight:700;color:var(--radon);font-size:.58rem;margin:.4rem 0 .2rem">2. Émanation et transport</div>
+Le Rn-222 <strong>diffuse</strong> à travers les pores du sol (convection + diffusion moléculaire). La force motrice est le <strong>gradient de pression</strong> entre le sol et l'intérieur du bâtiment (effet cheminée, dépression due au vent et au chauffage). Il entre par :
+<br>• Fissures dans la dalle béton
+<br>• Passages de canalisations non étanchéifiés
+<br>• Joints sol-mur dégradés
+<br>• Remontées par les vides sanitaires
+</div>
+
+<div style="font-size:.5rem;color:var(--text-dim);line-height:1.5">
+<div style="font-weight:700;color:var(--radon);font-size:.58rem;margin-bottom:.25rem">3. Pourquoi c'est dangereux ?</div>
+Le Rn-222 et ses descendants (<sup>218</sup>Po, <sup>214</sup>Po) émettent des <strong>particules alpha (α)</strong> — très ionisantes, très courte portée (~5 cm dans l'air). Inhalées, elles irradient directement les cellules de l'épithélium bronchique → <strong>cancer du poumon</strong>.
+
+<div style="margin:.3rem 0;padding:.3rem;border-radius:5px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.1);font-size:.48rem">
+⚠️ <strong>2e cause de cancer du poumon en France</strong> (après le tabac). ~3 000 décès/an attribués au radon (IRSN/InVS).
+</div>
+
+<div style="font-weight:700;color:var(--radon);font-size:.58rem;margin:.4rem 0 .2rem">4. Ce que représente la simulation</div>
+<table style="width:100%;font-size:.48rem;border-collapse:collapse;margin-top:.2rem">
+<tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:.15rem .3rem;color:var(--radon)">☢️ Fumée colorée</td><td style="padding:.15rem .3rem">Concentration en Bq/m³ — chaque <strong>Becquerel = 1 désintégration/seconde</strong>. Plus la fumée est dense/rouge, plus l'activité volumique est élevée.</td></tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:.15rem .3rem;color:var(--radon)">🔴→🟡→🟢 Couleurs</td><td style="padding:.15rem .3rem"><strong>Rouge</strong> (>300 Bq/m³) = seuil réglementaire dépassé. <strong>Orange</strong> = vigilance. <strong>Vert</strong> = exposition faible. Basé sur l'arrêté du 27/06/2018.</td></tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:.15rem .3rem;color:var(--radon)">↑ Montée du gaz</td><td style="padding:.15rem .3rem">Simule la <strong>convection thermique</strong> : le radon monte par effet cheminée (air chaud intérieur < pression atmosphérique → aspiration du gaz du sol).</td></tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:.15rem .3rem;color:var(--radon)">💨 Dilatation</td><td style="padding:.15rem .3rem">Les volutes grossissent en montant : simule la <strong>diffusion moléculaire</strong> du gaz dans l'air ambiant (loi de Fick).</td></tr>
+<tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:.15rem .3rem;color:var(--radon)">🌫️ Accumulation</td><td style="padding:.15rem .3rem">Le haze au sol représente l'<strong>accumulation dans les espaces confinés</strong> : le radon (densité 9,73 kg/m³, 7,5× l'air) stagne dans les zones basses mal ventilées.</td></tr>
+<tr><td style="padding:.15rem .3rem;color:var(--radon)">📊 Dose mSv</td><td style="padding:.15rem .3rem"><strong>Dose efficace</strong> = C × T × FC. Le facteur de conversion (6×10⁻⁶) intègre : fraction inhalée, dépôt bronchique, énergie α des descendants, facteur de pondération tissulaire (w<sub>T</sub> poumon = 0.12).</td></tr>
+</table>
+</div>
 </div>
 </div>
 </div>
 
 <script>
-// Base de données départements avec zone radon IRSN
-const DEPTS=[
-{n:'01',nom:'Ain',zone:2,sol:'Calcaire/Jurassien',bqTyp:80},{n:'02',nom:'Aisne',zone:1,sol:'Sédimentaire',bqTyp:40},
-{n:'03',nom:'Allier',zone:3,sol:'Granitique (Massif central)',bqTyp:200},{n:'04',nom:'Alpes-de-Haute-Provence',zone:2,sol:'Calcaire/Alpin',bqTyp:90},
-{n:'05',nom:'Hautes-Alpes',zone:3,sol:'Cristallin alpin',bqTyp:180},{n:'06',nom:'Alpes-Maritimes',zone:2,sol:'Calcaire/Cristallin',bqTyp:85},
-{n:'07',nom:'Ardèche',zone:3,sol:'Granitique (Massif central)',bqTyp:220},{n:'08',nom:'Ardennes',zone:2,sol:'Schiste/Ardoisier',bqTyp:95},
-{n:'09',nom:'Ariège',zone:3,sol:'Granitique (Pyrénées)',bqTyp:200},{n:'10',nom:'Aube',zone:1,sol:'Sédimentaire (Champagne)',bqTyp:35},
-{n:'11',nom:'Aude',zone:2,sol:'Mixte',bqTyp:75},{n:'12',nom:'Aveyron',zone:3,sol:'Granitique (Massif central)',bqTyp:210},
-{n:'13',nom:'Bouches-du-Rhône',zone:1,sol:'Calcaire',bqTyp:40},{n:'14',nom:'Calvados',zone:2,sol:'Schiste/Granit (Bocage)',bqTyp:90},
-{n:'15',nom:'Cantal',zone:3,sol:'Volcanique/Granitique',bqTyp:250},{n:'16',nom:'Charente',zone:2,sol:'Calcaire/Granitique',bqTyp:80},
-{n:'17',nom:'Charente-Maritime',zone:1,sol:'Calcaire/Sédimentaire',bqTyp:40},{n:'18',nom:'Cher',zone:2,sol:'Mixte',bqTyp:85},
-{n:'19',nom:'Corrèze',zone:3,sol:'Granitique (Massif central)',bqTyp:230},{n:'2A',nom:'Corse-du-Sud',zone:3,sol:'Granitique',bqTyp:250},
-{n:'2B',nom:'Haute-Corse',zone:3,sol:'Granitique/Schisteux',bqTyp:240},{n:'21',nom:'Côte-d\'Or',zone:2,sol:'Calcaire/Granitique',bqTyp:85},
-{n:'22',nom:'Côtes-d\'Armor',zone:3,sol:'Granitique (Bretagne)',bqTyp:200},{n:'23',nom:'Creuse',zone:3,sol:'Granitique/Uranifère (Massif central)',bqTyp:350},
-{n:'24',nom:'Dordogne',zone:2,sol:'Calcaire/Granitique',bqTyp:100},{n:'25',nom:'Doubs',zone:2,sol:'Calcaire jurassien',bqTyp:80},
-{n:'26',nom:'Drôme',zone:2,sol:'Calcaire/Cristallin',bqTyp:85},{n:'27',nom:'Eure',zone:1,sol:'Sédimentaire',bqTyp:35},
-{n:'28',nom:'Eure-et-Loir',zone:1,sol:'Sédimentaire (Beauce)',bqTyp:30},{n:'29',nom:'Finistère',zone:3,sol:'Granitique (Bretagne)',bqTyp:220},
-{n:'30',nom:'Gard',zone:2,sol:'Calcaire/Granitique (Cévennes)',bqTyp:100},{n:'31',nom:'Haute-Garonne',zone:2,sol:'Mixte/Pyrénéen',bqTyp:85},
-{n:'32',nom:'Gers',zone:1,sol:'Sédimentaire',bqTyp:35},{n:'33',nom:'Gironde',zone:1,sol:'Sédimentaire (Aquitain)',bqTyp:30},
-{n:'34',nom:'Hérault',zone:2,sol:'Calcaire/Schisteux',bqTyp:80},{n:'35',nom:'Ille-et-Vilaine',zone:3,sol:'Granitique (Bretagne)',bqTyp:190},
-{n:'36',nom:'Indre',zone:3,sol:'Granitique (Massif central)',bqTyp:180},{n:'37',nom:'Indre-et-Loire',zone:2,sol:'Calcaire/Tuffeau',bqTyp:75},
-{n:'38',nom:'Isère',zone:2,sol:'Cristallin alpin/Calcaire',bqTyp:100},{n:'39',nom:'Jura',zone:2,sol:'Calcaire jurassien',bqTyp:80},
-{n:'40',nom:'Landes',zone:1,sol:'Sable/Sédimentaire',bqTyp:25},{n:'41',nom:'Loir-et-Cher',zone:2,sol:'Calcaire/Mixte',bqTyp:70},
-{n:'42',nom:'Loire',zone:3,sol:'Granitique (Massif central)',bqTyp:200},{n:'43',nom:'Haute-Loire',zone:3,sol:'Volcanique/Granitique',bqTyp:260},
-{n:'44',nom:'Loire-Atlantique',zone:2,sol:'Granitique/Schisteux',bqTyp:100},{n:'45',nom:'Loiret',zone:1,sol:'Sédimentaire (Beauce)',bqTyp:35},
-{n:'46',nom:'Lot',zone:2,sol:'Calcaire (Causses)',bqTyp:90},{n:'47',nom:'Lot-et-Garonne',zone:1,sol:'Sédimentaire',bqTyp:35},
-{n:'48',nom:'Lozère',zone:3,sol:'Granitique/Uranifère (Margeride)',bqTyp:350},{n:'49',nom:'Maine-et-Loire',zone:2,sol:'Schisteux/Granitique',bqTyp:90},
-{n:'50',nom:'Manche',zone:2,sol:'Granitique/Schisteux',bqTyp:95},{n:'51',nom:'Marne',zone:1,sol:'Calcaire (Champagne)',bqTyp:30},
-{n:'52',nom:'Haute-Marne',zone:2,sol:'Calcaire/Granitique',bqTyp:80},{n:'53',nom:'Mayenne',zone:2,sol:'Schisteux/Granitique',bqTyp:90},
-{n:'54',nom:'Meurthe-et-Moselle',zone:2,sol:'Calcaire/Grès',bqTyp:80},{n:'55',nom:'Meuse',zone:1,sol:'Calcaire',bqTyp:40},
-{n:'56',nom:'Morbihan',zone:3,sol:'Granitique (Bretagne)',bqTyp:200},{n:'57',nom:'Moselle',zone:2,sol:'Grès/Calcaire',bqTyp:80},
-{n:'58',nom:'Nièvre',zone:3,sol:'Granitique (Morvan)',bqTyp:200},{n:'59',nom:'Nord',zone:1,sol:'Sédimentaire',bqTyp:30},
-{n:'60',nom:'Oise',zone:1,sol:'Sédimentaire',bqTyp:30},{n:'61',nom:'Orne',zone:2,sol:'Granitique/Schisteux',bqTyp:100},
-{n:'62',nom:'Pas-de-Calais',zone:1,sol:'Sédimentaire/Craie',bqTyp:30},{n:'63',nom:'Puy-de-Dôme',zone:3,sol:'Volcanique/Granitique',bqTyp:250},
-{n:'64',nom:'Pyrénées-Atlantiques',zone:3,sol:'Granitique (Pyrénées)',bqTyp:190},{n:'65',nom:'Hautes-Pyrénées',zone:3,sol:'Granitique (Pyrénées)',bqTyp:200},
-{n:'66',nom:'Pyrénées-Orientales',zone:3,sol:'Granitique (Pyrénées)',bqTyp:190},{n:'67',nom:'Bas-Rhin',zone:2,sol:'Grès vosgien/Granit',bqTyp:100},
-{n:'68',nom:'Haut-Rhin',zone:3,sol:'Granitique (Vosges)',bqTyp:190},{n:'69',nom:'Rhône',zone:2,sol:'Mixte/Cristallin',bqTyp:90},
-{n:'70',nom:'Haute-Saône',zone:2,sol:'Grès/Calcaire',bqTyp:80},{n:'71',nom:'Saône-et-Loire',zone:2,sol:'Granitique/Calcaire',bqTyp:100},
-{n:'72',nom:'Sarthe',zone:2,sol:'Calcaire/Schisteux',bqTyp:75},{n:'73',nom:'Savoie',zone:3,sol:'Cristallin alpin',bqTyp:190},
-{n:'74',nom:'Haute-Savoie',zone:2,sol:'Calcaire alpin/Cristallin',bqTyp:100},{n:'75',nom:'Paris',zone:1,sol:'Calcaire (Lutétien)',bqTyp:30},
-{n:'76',nom:'Seine-Maritime',zone:1,sol:'Craie',bqTyp:30},{n:'77',nom:'Seine-et-Marne',zone:1,sol:'Sédimentaire',bqTyp:30},
-{n:'78',nom:'Yvelines',zone:1,sol:'Sédimentaire',bqTyp:35},{n:'79',nom:'Deux-Sèvres',zone:2,sol:'Granitique/Calcaire',bqTyp:95},
-{n:'80',nom:'Somme',zone:1,sol:'Craie',bqTyp:30},{n:'81',nom:'Tarn',zone:2,sol:'Granitique/Schisteux',bqTyp:100},
-{n:'82',nom:'Tarn-et-Garonne',zone:1,sol:'Sédimentaire',bqTyp:40},{n:'83',nom:'Var',zone:2,sol:'Cristallin/Calcaire',bqTyp:85},
-{n:'84',nom:'Vaucluse',zone:1,sol:'Calcaire',bqTyp:40},{n:'85',nom:'Vendée',zone:2,sol:'Granitique/Schisteux',bqTyp:95},
-{n:'86',nom:'Vienne',zone:2,sol:'Calcaire/Granitique',bqTyp:90},{n:'87',nom:'Haute-Vienne',zone:3,sol:'Granitique/Uranifère (anciens sites miniers)',bqTyp:400},
-{n:'88',nom:'Vosges',zone:3,sol:'Granitique (Vosges)',bqTyp:200},{n:'89',nom:'Yonne',zone:2,sol:'Calcaire/Granitique',bqTyp:80},
-{n:'90',nom:'Territoire de Belfort',zone:2,sol:'Grès/Granitique',bqTyp:90},{n:'91',nom:'Essonne',zone:1,sol:'Sédimentaire',bqTyp:30},
-{n:'92',nom:'Hauts-de-Seine',zone:1,sol:'Sédimentaire',bqTyp:30},{n:'93',nom:'Seine-Saint-Denis',zone:1,sol:'Sédimentaire',bqTyp:30},
-{n:'94',nom:'Val-de-Marne',zone:1,sol:'Sédimentaire',bqTyp:30},{n:'95',nom:'Val-d\'Oise',zone:1,sol:'Sédimentaire',bqTyp:35}
+// Base de données communes (sélection représentative haute-risque + chefs-lieux)
+const COMMUNES=[
+// Haute-Vienne (87) — Zone 3, uranifère
+{c:'Limoges',d:'87',nom:'Haute-Vienne',zone:3,sol:'Granitique/Uranifère',bq:350,detail:'Chef-lieu. Sol granitique hercynien riche en uranium naturel. Proximité anciens sites miniers COGEMA.'},
+{c:'Bessines-sur-Gartempe',d:'87',nom:'Haute-Vienne',zone:3,sol:'Uranifère (site minier)',bq:600,detail:'⛔ Ancien site minier majeur (division La Crouzille). Leucogranites à uranium. Mesures radon obligatoires.'},
+{c:'Saint-Sylvestre',d:'87',nom:'Haute-Vienne',zone:3,sol:'Uranifère (site minier)',bq:700,detail:'⛔ Ancienne mine de Fanay. Parmi les concentrations radon les plus élevées de France.'},
+{c:'Ambazac',d:'87',nom:'Haute-Vienne',zone:3,sol:'Granitique/Uranifère',bq:450,detail:'Monts d\'Ambazac. Granite à deux micas riche en uranium. Anciennes mines à proximité.'},
+{c:'Bellac',d:'87',nom:'Haute-Vienne',zone:3,sol:'Granitique',bq:280,detail:'Nord Haute-Vienne. Granite du Limousin, potentiel radon significatif.'},
+{c:'Saint-Junien',d:'87',nom:'Haute-Vienne',zone:3,sol:'Granitique',bq:250,detail:'Granite hercynien. Zone 3 potentiel radon significatif.'},
+{c:'Rochechouart',d:'87',nom:'Haute-Vienne',zone:3,sol:'Granitique (impact météorite)',bq:220,detail:'Astroblème de Rochechouart. Brèches d\'impact + granite sous-jacent.'},
+// Creuse (23) — Zone 3
+{c:'Guéret',d:'23',nom:'Creuse',zone:3,sol:'Granitique (Massif central)',bq:320,detail:'Chef-lieu. Plateau de Millevaches. Granite à deux micas.'},
+{c:'Aubusson',d:'23',nom:'Creuse',zone:3,sol:'Granitique',bq:300,detail:'Haute vallée de la Creuse. Sol granitique, potentiel radon élevé.'},
+{c:'La Souterraine',d:'23',nom:'Creuse',zone:3,sol:'Granitique/Gneiss',bq:280,detail:'Socle cristallin ancien. Gneiss et granite.'},
+{c:'Bourganeuf',d:'23',nom:'Creuse',zone:3,sol:'Granitique',bq:350,detail:'Monts d\'Ambazac nord. Granite riche en minéraux radioactifs.'},
+// Corrèze (19) — Zone 3
+{c:'Tulle',d:'19',nom:'Corrèze',zone:3,sol:'Granitique/Gneiss',bq:230,detail:'Chef-lieu. Socle cristallin du Massif central.'},
+{c:'Brive-la-Gaillarde',d:'19',nom:'Corrèze',zone:2,sol:'Grès/Calcaire (bassin)',bq:80,detail:'Bassin de Brive, sol sédimentaire. Potentiel radon plus faible que le reste de la Corrèze.'},
+{c:'Ussel',d:'19',nom:'Corrèze',zone:3,sol:'Granitique (plateau Millevaches)',bq:280,detail:'Plateau de Millevaches. Granite à biotite.'},
+// Bretagne — Zone 3
+{c:'Rennes',d:'35',nom:'Ille-et-Vilaine',zone:3,sol:'Schiste briovérien/Granite',bq:160,detail:'Socle briovérien métamorphique + intrusions granitiques.'},
+{c:'Quimper',d:'29',nom:'Finistère',zone:3,sol:'Granitique (Cornouaille)',bq:220,detail:'Granite de Cornouaille. Potentiel radon significatif.'},
+{c:'Brest',d:'29',nom:'Finistère',zone:3,sol:'Gneiss/Granite',bq:180,detail:'Socle cristallin ancien. Littoral mais sol granitique.'},
+{c:'Vannes',d:'56',nom:'Morbihan',zone:3,sol:'Granitique',bq:200,detail:'Granite de Vannes. Zone 3 potentiel radon.'},
+{c:'Saint-Brieuc',d:'22',nom:'Côtes-d\'Armor',zone:3,sol:'Granite/Diorite',bq:190,detail:'Massif armoricain. Roches cristallines.'},
+// Massif central
+{c:'Clermont-Ferrand',d:'63',nom:'Puy-de-Dôme',zone:3,sol:'Volcanique/Granitique',bq:220,detail:'Chaîne des Puys. Basaltes + socle granitique sous-jacent.'},
+{c:'Aurillac',d:'15',nom:'Cantal',zone:3,sol:'Volcanique/Granitique',bq:250,detail:'Monts du Cantal. Volcanisme + socle granitique.'},
+{c:'Le Puy-en-Velay',d:'43',nom:'Haute-Loire',zone:3,sol:'Volcanique/Gneiss',bq:260,detail:'Plateau volcanique. Basaltes + gneiss sous-jacent.'},
+{c:'Mende',d:'48',nom:'Lozère',zone:3,sol:'Granitique (Margeride)',bq:350,detail:'Granite de la Margeride. Parmi les plus hauts potentiels radon du Massif central.'},
+{c:'Saint-Étienne',d:'42',nom:'Loire',zone:3,sol:'Granitique (Pilat)',bq:200,detail:'Massif du Pilat. Granite et gneiss.'},
+{c:'Rodez',d:'12',nom:'Aveyron',zone:3,sol:'Granitique/Schisteux',bq:210,detail:'Rouergue cristallin. Schistes et gneiss.'},
+// Corse
+{c:'Ajaccio',d:'2A',nom:'Corse-du-Sud',zone:3,sol:'Granitique (Corse hercynienne)',bq:250,detail:'Granite alcalin corse. Potentiel radon significatif.'},
+{c:'Bastia',d:'2B',nom:'Haute-Corse',zone:3,sol:'Schiste/Ophiolite',bq:200,detail:'Corse alpine schistée. Roches vertes et schistes lustrés.'},
+// Vosges / Alsace
+{c:'Épinal',d:'88',nom:'Vosges',zone:3,sol:'Granitique (Vosges)',bq:200,detail:'Granite vosgien. Socle hercynien.'},
+{c:'Colmar',d:'68',nom:'Haut-Rhin',zone:3,sol:'Granite vosgien/Grès',bq:190,detail:'Piémont vosgien. Granite + grès.'},
+// Pyrénées
+{c:'Pau',d:'64',nom:'Pyrénées-Atlantiques',zone:3,sol:'Granitique (Pyrénées)',bq:180,detail:'Piémont pyrénéen. Granites hercyniens.'},
+{c:'Tarbes',d:'65',nom:'Hautes-Pyrénées',zone:3,sol:'Granitique/Gneiss',bq:200,detail:'Hautes-Pyrénées. Socle cristallin.'},
+// Zones 1 & 2 — comparaison
+{c:'Paris',d:'75',nom:'Paris',zone:1,sol:'Calcaire lutétien/Sédimentaire',bq:30,detail:'Bassin parisien. Calcaire, gypse, argile. Très faible potentiel radon.'},
+{c:'Lyon',d:'69',nom:'Rhône',zone:2,sol:'Alluvions/Cristallin',bq:80,detail:'Confluence. Alluvions fluviatiles + collines cristallines.'},
+{c:'Marseille',d:'13',nom:'Bouches-du-Rhône',zone:1,sol:'Calcaire urgonien',bq:35,detail:'Calcaire. Très faible potentiel radon.'},
+{c:'Bordeaux',d:'33',nom:'Gironde',zone:1,sol:'Sédimentaire (bassin aquitain)',bq:25,detail:'Sable, calcaire, argile du bassin aquitain. Potentiel radon très faible.'},
+{c:'Toulouse',d:'31',nom:'Haute-Garonne',zone:2,sol:'Molasse/Alluvions',bq:60,detail:'Bassin molassique + alluvions de la Garonne.'},
+{c:'Nantes',d:'44',nom:'Loire-Atlantique',zone:2,sol:'Schiste/Gneiss',bq:100,detail:'Massif armoricain sud. Schistes et gneiss. Zone 2 modéré.'},
+{c:'Strasbourg',d:'67',nom:'Bas-Rhin',zone:2,sol:'Alluvions rhénanes/Grès',bq:70,detail:'Plaine du Rhin. Alluvions fluviatiles.'},
+{c:'Lille',d:'59',nom:'Nord',zone:1,sol:'Craie/Argile',bq:25,detail:'Bassin houiller + craie. Potentiel radon très faible.'},
+{c:'Nice',d:'06',nom:'Alpes-Maritimes',zone:2,sol:'Calcaire/Flysch',bq:70,detail:'Alpes-Maritimes. Calcaire + flysch. Potentiel modéré.'},
+{c:'Montpellier',d:'34',nom:'Hérault',zone:2,sol:'Calcaire/Jurassique',bq:60,detail:'Garrigues calcaires. Potentiel modéré.'},
+{c:'Grenoble',d:'38',nom:'Isère',zone:2,sol:'Alluvions/Cristallin alpin',bq:100,detail:'Cuvette alluviale + massifs cristallins (Belledonne).'},
+{c:'Poitiers',d:'86',nom:'Vienne',zone:2,sol:'Calcaire/Jurassique',bq:75,detail:'Plateau calcaire du seuil du Poitou. Potentiel modéré.'},
+{c:'Chamonix',d:'74',nom:'Haute-Savoie',zone:2,sol:'Cristallin (Mont-Blanc)',bq:120,detail:'Granite du Mont-Blanc. Altitude compense en partie.'},
+{c:'Périgueux',d:'24',nom:'Dordogne',zone:2,sol:'Calcaire/Granitique',bq:90,detail:'Transition bassin aquitain / socle cristallin.'},
 ];
 
-function searchDept(){
-  const q=document.getElementById('deptSearch').value.trim().toLowerCase();
-  const res=document.getElementById('deptResults');
-  if(q.length<1){res.innerHTML='';return}
-  const matches=DEPTS.filter(d=>d.n.toLowerCase().includes(q)||d.nom.toLowerCase().includes(q)||d.sol.toLowerCase().includes(q));
-  res.innerHTML=matches.slice(0,8).map(d=>{
-    const zCol=d.zone===3?'#ef4444':d.zone===2?'#f59e0b':'#22c55e';
-    const zLab=d.zone===3?'ÉLEVÉ':d.zone===2?'MODÉRÉ':'FAIBLE';
-    return`<div onclick="selectDept('${d.n}')" style="padding:.3rem .4rem;margin-bottom:.15rem;border-radius:5px;background:rgba(0,0,0,.15);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:.52rem;border-left:3px solid ${zCol}">
-      <span><strong>${d.n}</strong> — ${d.nom}</span>
-      <span style="color:${zCol};font-weight:600;font-size:.45rem">Zone ${d.zone} · ${zLab}</span>
+function searchCommune(){
+  const q=document.getElementById('communeSearch').value.trim().toLowerCase();
+  const res=document.getElementById('communeResults');
+  if(q.length<2){res.innerHTML='';return}
+  const matches=COMMUNES.filter(c=>
+    c.c.toLowerCase().includes(q)||c.d.includes(q)||c.nom.toLowerCase().includes(q)||c.sol.toLowerCase().includes(q)
+  );
+  res.innerHTML=matches.slice(0,10).map(c=>{
+    const zCol=c.zone===3?'#ef4444':c.zone===2?'#f59e0b':'#22c55e';
+    return`<div onclick="selectCommune('${c.c}')" style="padding:.25rem .4rem;margin-bottom:.12rem;border-radius:5px;background:rgba(0,0,0,.12);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:.5rem;border-left:3px solid ${zCol};transition:.15s" onmouseover="this.style.background='rgba(245,158,11,.08)'" onmouseout="this.style.background='rgba(0,0,0,.12)'">
+      <span><strong>${c.c}</strong> <span style="color:var(--text-muted)">(${c.d} ${c.nom})</span></span>
+      <span style="color:${zCol};font-weight:600;font-size:.42rem;white-space:nowrap">Zone ${c.zone} · ${c.bq} Bq/m³</span>
     </div>`}).join('');
+  if(matches.length===0)res.innerHTML='<div style="font-size:.48rem;color:var(--text-muted);padding:.3rem">Aucune commune trouvée. Essayez le <a href="https://www.irsn.fr/savoir-comprendre/environnement/connaitre-potentiel-radon-ma-commune" target="_blank" style="color:var(--radon)">site IRSN</a> pour une recherche exhaustive.</div>';
 }
 
-function selectDept(n){
-  const d=DEPTS.find(x=>x.n===n);if(!d)return;
-  const zCol=d.zone===3?'#ef4444':d.zone===2?'#f59e0b':'#22c55e';
-  const zLab=d.zone===3?'ÉLEVÉ':d.zone===2?'MODÉRÉ':'FAIBLE';
-  document.getElementById('deptDetail').innerHTML=`
-    <div style="font-size:.7rem;font-weight:700;color:${zCol};margin-bottom:.2rem">
-      ${d.n} — ${d.nom} · Zone ${d.zone} (${zLab})
+function selectCommune(name){
+  const c=COMMUNES.find(x=>x.c===name);if(!c)return;
+  const zCol=c.zone===3?'#ef4444':c.zone===2?'#f59e0b':'#22c55e';
+  const zLab=c.zone===3?'ÉLEVÉ':c.zone===2?'MODÉRÉ':'FAIBLE';
+  const solType=c.sol.toLowerCase().includes('uranif')?'🔴 Uranifère':c.sol.toLowerCase().includes('granit')?'🟡 Granitique':'🟢 Sédimentaire';
+  document.getElementById('communeDetail').innerHTML=`
+    <div style="font-size:.75rem;font-weight:700;color:${zCol};margin-bottom:.3rem">
+      ${c.c} <span style="font-size:.5rem;color:var(--text-muted)">(${c.d} — ${c.nom})</span>
     </div>
-    <div style="font-size:.52rem;line-height:1.5;color:var(--text-dim)">
-      <strong>Géologie :</strong> ${d.sol}<br>
-      <strong>Concentration typique :</strong> <span style="color:${zCol};font-weight:700">${d.bqTyp} Bq/m³</span> (estimation moyenne intérieur, RDC, ventilation standard)<br>
-      <strong>Mesures obligatoires :</strong> ${d.zone===3?'<span style="color:#ef4444;font-weight:700">OUI — zone à potentiel radon significatif (arrêté 27/06/2018)</span>':'Non obligatoires mais recommandées'}<br>
-      ${d.zone===3?'<strong>Obligation employeur :</strong> mesurage sur les lieux de travail en RDC et sous-sol (art. R.4451-14 Code du travail)':''}
+    <div style="display:inline-block;padding:.15rem .4rem;border-radius:4px;background:${zCol}22;color:${zCol};font-size:.48rem;font-weight:600;margin-bottom:.3rem">
+      Zone ${c.zone} — Potentiel ${zLab}
+    </div>
+    <div style="font-size:.5rem;line-height:1.55;color:var(--text-dim);margin-top:.2rem">
+      <strong>Type de sol :</strong> ${solType} — ${c.sol}<br>
+      <strong>Concentration typique :</strong> <span style="color:${zCol};font-weight:700;font-size:.6rem">${c.bq} Bq/m³</span><br>
+      <strong>Contexte :</strong> ${c.detail}<br>
+      ${c.zone===3?'<br><span style="color:#ef4444;font-weight:700">⛔ Mesures radon obligatoires</span> (arrêté 27/06/2018). Obligation employeur : mesurage lieux de travail RDC et sous-sol (art. R.4451-14 C. trav.)':''}
+      ${c.bq>=300?'<br><span style="color:#ef4444">⚠️ Dépasse le seuil de référence de 300 Bq/m³</span>':''}
     </div>`;
-  document.getElementById('dCalcBq').value=d.bqTyp;
-  document.getElementById('deptCalc').style.display='block';
-  calcDeptDose();
+  document.getElementById('cCalcBq').value=c.bq;
+  document.getElementById('communeCalc').style.display='block';
+  calcCommuneDose();
 }
 
-function calcDeptDose(){
-  const bq=parseInt(document.getElementById('dCalcBq').value)||200;
-  const hj=parseFloat(document.getElementById('dCalcH').value)||7;
-  const ja=parseInt(document.getElementById('dCalcJ').value)||220;
-  const FC=6e-6;
+function calcCommuneDose(){
+  const bq=parseInt(document.getElementById('cCalcBq').value)||200;
+  const hj=parseFloat(document.getElementById('cCalcH').value)||7;
+  const ja=parseInt(document.getElementById('cCalcJ').value)||220;
   const hAn=hj*ja;
-  const dose=bq*hAn*FC;
+  const dose=bq*hAn*6e-6;
   const dCol=dose>6?'#ef4444':dose>3?'#f97316':dose>1?'#f59e0b':'#22c55e';
-  const risk=dose>6?'⛔ DÉPASSEMENT seuil professionnel (6 mSv/an)':dose>3?'⚠️ Vigilance — se rapproche du seuil':dose>1?'⚡ Exposition notable':'✓ Exposition acceptable';
-  document.getElementById('dCalcResult').innerHTML=`
+  const risk=dose>6?'⛔ DÉPASSEMENT seuil professionnel (6 mSv/an)':dose>3?'⚠️ Approche du seuil — surveillance renforcée':dose>1?'⚡ Exposition notable — vérifier ventilation':'✓ Exposition acceptable';
+  document.getElementById('cCalcResult').innerHTML=`
     <span style="color:${dCol};font-size:.9rem">${dose.toFixed(2)} mSv/an</span>
-    <span style="font-size:.5rem;color:var(--text-dim)"> = ${bq} × ${hAn}h × 6×10⁻⁶</span><br>
-    <span style="font-size:.5rem;color:${dCol}">${risk}</span>`;
+    <span style="font-size:.45rem;color:var(--text-dim)"> = ${bq} Bq/m³ × ${hAn} h/an × 6×10⁻⁶</span><br>
+    <span style="font-size:.48rem;color:${dCol}">${risk}</span>`;
 }
 </script>
 
@@ -777,9 +839,9 @@ function setSol(s,el){sol=s;document.querySelectorAll('.card:has(#vSol) .sel-row
 function setZone(z,el){zone=z;document.querySelectorAll('.card:has(#vZone) .sel-row .sel-btn').forEach(b=>b.classList.remove('ac'));el.classList.add('ac');
   document.getElementById('vZone').textContent='Zone '+z;onP()}
 function setVent(v,el){vent=v;document.querySelectorAll('.card:has(#vVent) .sel-row .sel-btn').forEach(b=>b.classList.remove('ac'));el.classList.add('ac');
-  document.getElementById('vVent').textContent={aucune:'Aucune',nat:'Naturelle',vmcsf:'VMC SF',vmcdf:'VMC DF'}[v];
+  document.getElementById('vVent').textContent={aucune:'Aucune',nat:'Naturelle',vmi:'VMI',vmcsf:'VMC SF',vmcdf:'VMC DF'}[v];
   // Auto-adjust renouvellement
-  const renouv={aucune:1,nat:3,vmcsf:8,vmcdf:14}[v];
+  const renouv={aucune:1,nat:3,vmi:6,vmcsf:8,vmcdf:14}[v];
   document.getElementById('sRenouv').value=renouv;onP()}
 function setActi(a,el){acti=a;document.querySelectorAll('.card:has(#vActi) .sel-row .sel-btn').forEach(b=>b.classList.remove('ac'));el.classList.add('ac');
   document.getElementById('vActi').textContent={sed:'Sédentaire',mod:'Modérée',phy:'Physique'}[a];onP()}
