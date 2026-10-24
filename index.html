@@ -28,6 +28,8 @@ a{color:inherit;text-decoration:none}
   mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 75%,rgba(0,0,0,0) 100%);
   -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 75%,rgba(0,0,0,0) 100%);
 }
+/* ═══ HERO — ANIMATION (particules, ondes, balayage) ═══ */
+.hero-fx{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;mix-blend-mode:screen}
 .hero-overlay{
   position:absolute;bottom:8%;left:0;z-index:2;
   padding:1.5rem 3rem;max-width:550px;
@@ -312,6 +314,7 @@ a{color:inherit;text-decoration:none}
   <!-- ── HERO IMAGE + TITRE OVERLAY ── -->
   <div class="hero-inner">
     <img class="hero-img" src="assets/images/hero.jpg" alt="PréventIA Invisible Map">
+    <canvas class="hero-fx" aria-hidden="true"></canvas>
     <div class="hero-overlay">
       <h1>Rendre l'<span class="gr">invisible</span>,<br>visible.</h1>
       <p>Les dangers les plus graves sont ceux qu'on ne voit pas. <strong>Invisible Map</strong> les révèle grâce à des simulations interactives pour comprendre, apprendre et agir.</p>
@@ -555,6 +558,130 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth'});
   });
 });
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   HERO — ANIMATION « RÉVÉLER L'INVISIBLE »
+   3 effets dessinés sur un <canvas> posé sur l'image :
+     • particules qui montent et scintillent (aérosols, radon…)
+     • ondes concentriques (bruit, rayonnements)
+     • balayage lumineux qui « révèle » les particules sur son passage
+   La souris (ou le doigt) relie et illumine les particules proches.
+   ─── RÉGLAGES : modifiez les valeurs ci-dessous ───
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  const REGLAGES = {
+    particules: 130,                 // nombre de particules (sur grand écran)
+    vitesse: 1,                     // 0.5 = plus lent, 2 = plus rapide
+    couleurs: ['#2dd4bf', '#38bdf8', '#a855f7', '#60a5fa'],
+    rayonSouris: 140,               // zone d'influence de la souris (px)
+    ondes: [                        // sources d'ondes, en % de la largeur/hauteur
+      { x: 0.74, y: 0.42, couleur: '45,212,191', toutes: 2.6 },   // silhouette
+      { x: 0.36, y: 0.52, couleur: '96,165,250', toutes: 1.8 }    // onde sonore
+    ],
+    balayage: true,                 // bande lumineuse qui traverse l'image
+    balayageToutes: 9               // secondes entre deux passages
+  };
+
+  const cv = document.querySelector('.hero-fx');
+  if (!cv) return;
+  const zone = cv.parentElement, ctx = cv.getContext('2d');
+  const calme = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let L = 0, H = 0, dpr = 1, parts = [], ondes = [], souris = null, visible = true, t0 = performance.now(), dernier = t0;
+
+  function taille() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    L = zone.clientWidth; H = zone.clientHeight;
+    cv.width = L * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.round(REGLAGES.particules * Math.min(1, L / 1200));
+    parts = Array.from({ length: n }, () => nouvelle(true));
+  }
+
+  /* Plus de particules à droite (côté silhouette), moins sous le texte */
+  function nouvelle(partout) {
+    const x = L * Math.pow(Math.random(), 0.6);
+    return {
+      x, y: partout ? Math.random() * H : H + 10,
+      r: 0.8 + Math.random() * 2.2,
+      vy: -(0.15 + Math.random() * 0.45), vx: (Math.random() - 0.5) * 0.15,
+      c: REGLAGES.couleurs[Math.random() * REGLAGES.couleurs.length | 0],
+      ph: Math.random() * 6.28, eclat: 0
+    };
+  }
+
+  function dessiner(now) {
+    const dt = Math.min(50, now - dernier) / 16.67 * REGLAGES.vitesse; dernier = now;
+    const t = (now - t0) / 1000;
+    ctx.clearRect(0, 0, L, H);
+
+    /* 1. Ondes concentriques */
+    REGLAGES.ondes.forEach((o, i) => {
+      if (!ondes[i] || t - ondes[i] > o.toutes) { ondes[i] = t; }
+    });
+    REGLAGES.ondes.forEach(o => {
+      const cx = o.x * L, cy = o.y * H, max = Math.max(L, H) * 0.45;
+      for (let k = 0; k < 3; k++) {
+        const prog = ((t / o.toutes) + k / 3) % 1;
+        const r = prog * max, a = (1 - prog) * 0.32;
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, 6.283);
+        ctx.strokeStyle = `rgba(${o.couleur},${a})`; ctx.lineWidth = 1.4; ctx.stroke();
+      }
+    });
+
+    /* 2. Balayage lumineux */
+    let bx = -1;
+    if (REGLAGES.balayage) {
+      const cyc = (t % REGLAGES.balayageToutes) / 2.4;          // passage en 2,4 s
+      if (cyc < 1) {
+        bx = cyc * (L + 200) - 100;
+        const g = ctx.createLinearGradient(bx - 90, 0, bx + 90, 0);
+        g.addColorStop(0, 'rgba(45,212,191,0)'); g.addColorStop(0.5, 'rgba(45,212,191,.14)'); g.addColorStop(1, 'rgba(45,212,191,0)');
+        ctx.fillStyle = g; ctx.fillRect(bx - 90, 0, 180, H);
+      }
+    }
+
+    /* 3. Particules */
+    for (let i = 0; i < parts.length; i++) {
+      const p = parts[i];
+      p.x += p.vx * dt; p.y += p.vy * dt;
+      if (p.y < -10 || p.x < -10 || p.x > L + 10) { parts[i] = nouvelle(false); continue; }
+      if (bx > -1 && Math.abs(p.x - bx) < 60) p.eclat = 1;                 // révélée par le balayage
+      if (souris) { const d = Math.hypot(p.x - souris.x, p.y - souris.y); if (d < REGLAGES.rayonSouris) p.eclat = Math.max(p.eclat, 1 - d / REGLAGES.rayonSouris); }
+      p.eclat *= 0.96;
+      const scint = 0.45 + 0.35 * Math.sin(t * 2 + p.ph);
+      const a = Math.min(1, scint + p.eclat), r = p.r * (1 + p.eclat * 1.6);
+      ctx.globalAlpha = a; ctx.fillStyle = p.c;
+      ctx.shadowColor = p.c; ctx.shadowBlur = 6 + p.eclat * 14;
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 6.283); ctx.fill();
+    }
+    ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+
+    /* 4. Réseau autour de la souris */
+    if (souris) {
+      const proches = parts.filter(p => Math.hypot(p.x - souris.x, p.y - souris.y) < REGLAGES.rayonSouris);
+      ctx.lineWidth = 0.7;
+      for (let i = 0; i < proches.length; i++) for (let j = i + 1; j < proches.length; j++) {
+        const d = Math.hypot(proches[i].x - proches[j].x, proches[i].y - proches[j].y);
+        if (d < 90) { ctx.strokeStyle = `rgba(45,212,191,${0.35 * (1 - d / 90)})`; ctx.beginPath(); ctx.moveTo(proches[i].x, proches[i].y); ctx.lineTo(proches[j].x, proches[j].y); ctx.stroke(); }
+      }
+    }
+    if (visible) requestAnimationFrame(dessiner);
+  }
+
+  /* Souris / doigt */
+  const pos = e => { const b = zone.getBoundingClientRect(), q = e.touches ? e.touches[0] : e; souris = { x: q.clientX - b.left, y: q.clientY - b.top }; };
+  zone.addEventListener('pointermove', pos);
+  zone.addEventListener('pointerleave', () => souris = null);
+
+  /* Pause quand le héros n'est plus à l'écran (économise la batterie) */
+  new IntersectionObserver(([e]) => { const etait = visible; visible = e.isIntersecting; if (visible && !etait && !calme) { dernier = performance.now(); requestAnimationFrame(dessiner); } }).observe(zone);
+  new ResizeObserver(taille).observe(zone);
+
+  taille();
+  if (calme) { REGLAGES.vitesse = 0; REGLAGES.balayage = false; dessiner(performance.now()); visible = false; }   // image fixe
+  else requestAnimationFrame(dessiner);
+})();
 </script>
 </body>
 </html>
