@@ -580,13 +580,13 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
    ═══════════════════════════════════════════════════════════════════ */
 (function () {
   const REGLAGES = {
-    particules: 130,                 // nombre de particules (sur grand écran)
+    particules: 100,                // nombre de particules (sur grand écran)
+    taille: 1,                      // grosseur des particules : 0.7 = plus fines, 1.5 = plus grosses
     vitesse: 1,                     // 0.5 = plus lent, 2 = plus rapide
     couleurs: ['#2dd4bf', '#38bdf8', '#a855f7', '#60a5fa'],
     rayonSouris: 140,               // zone d'influence de la souris (px)
     ondes: [                        // sources d'ondes, en % de la largeur/hauteur
-      { x: 0.74, y: 0.42, couleur: '45,212,191', toutes: 2.6 },   // silhouette
-      { x: 0.36, y: 0.52, couleur: '96,165,250', toutes: 1.8 }    // onde sonore
+      { x: 0.74, y: 0.42, couleur: '45,212,191', toutes: 12 }     // silhouette — toutes = secondes par cycle (plus grand = plus lent)
     ],
     balayage: true,                 // bande lumineuse qui traverse l'image
     balayageToutes: 9               // secondes entre deux passages
@@ -612,7 +612,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     const x = L * Math.pow(Math.random(), 0.6);
     return {
       x, y: partout ? Math.random() * H : H + 10,
-      r: 0.8 + Math.random() * 2.2,
+      r: (0.5 + Math.random() * 1.1) * REGLAGES.taille,
       vy: -(0.15 + Math.random() * 0.45), vx: (Math.random() - 0.5) * 0.15,
       c: REGLAGES.couleurs[Math.random() * REGLAGES.couleurs.length | 0],
       ph: Math.random() * 6.28, eclat: 0
@@ -621,7 +621,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
 
   function dessiner(now) {
     const dt = Math.min(50, now - dernier) / 16.67 * REGLAGES.vitesse; dernier = now;
-    const t = (now - t0) / 1000;
+    const t = Math.max(0, (now - t0) / 1000);   // le 1er rafraîchissement peut précéder t0
     ctx.clearRect(0, 0, L, H);
 
     /* 1. Ondes concentriques */
@@ -659,9 +659,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
       if (souris) { const d = Math.hypot(p.x - souris.x, p.y - souris.y); if (d < REGLAGES.rayonSouris) p.eclat = Math.max(p.eclat, 1 - d / REGLAGES.rayonSouris); }
       p.eclat *= 0.96;
       const scint = 0.45 + 0.35 * Math.sin(t * 2 + p.ph);
-      const a = Math.min(1, scint + p.eclat), r = p.r * (1 + p.eclat * 1.6);
+      const a = Math.min(1, scint + p.eclat), r = p.r * (1 + p.eclat * 0.9);
       ctx.globalAlpha = a; ctx.fillStyle = p.c;
-      ctx.shadowColor = p.c; ctx.shadowBlur = 6 + p.eclat * 14;
+      ctx.shadowColor = p.c; ctx.shadowBlur = 4 + p.eclat * 8;
       ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 6.283); ctx.fill();
     }
     ctx.shadowBlur = 0; ctx.globalAlpha = 1;
