@@ -28,6 +28,15 @@ a{color:inherit;text-decoration:none}
   mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 75%,rgba(0,0,0,0) 100%);
   -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 75%,rgba(0,0,0,0) 100%);
 }
+/* ═══ HERO — DÉZOOM LENT DE L'IMAGE ═══
+   --dezoom-depart : zoom de départ (1.15 = 15 % plus grand)
+   --dezoom-duree  : durée du dézoom (plus long = plus doux)
+   --dezoom-centre : point fixe du dézoom (x y), ici le logo en haut à gauche (reste entier) */
+.hero-inner{--dezoom-depart:1.12;--dezoom-duree:22s;--dezoom-centre:8% 12%}
+.hero-img{transform-origin:var(--dezoom-centre);
+  animation:hero-dezoom var(--dezoom-duree) cubic-bezier(.35,.3,.55,1) both;will-change:transform}
+@keyframes hero-dezoom{from{transform:scale(var(--dezoom-depart))}to{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.hero-img{animation:none}}
 /* ═══ HERO — ANIMATION (particules, ondes, balayage) ═══ */
 .hero-fx{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;mix-blend-mode:screen}
 .hero-overlay{
